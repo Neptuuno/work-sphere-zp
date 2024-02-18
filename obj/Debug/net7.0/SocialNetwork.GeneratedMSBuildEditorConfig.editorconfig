@@ -9,37 +9,37 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SocialNetwork
 build_property.RootNamespace = SocialNetwork
-build_property.ProjectDir = D:\Adam\OneDrive\OneDrive - Smíchovská střední průmyslová škola\PVA\Zaverecny-Projekt\SocialNetwork\
+build_property.ProjectDir = /home/neptuno/Programming/c#/pva/zaverecna-prace/
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Adam\OneDrive\OneDrive - Smíchovská střední průmyslová škola\PVA\Zaverecny-Projekt\SocialNetwork
+build_property.MSBuildProjectDirectory = /home/neptuno/Programming/c#/pva/zaverecna-prace
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/Shared/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/Shared/_ValidationScriptsPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Adam/OneDrive/OneDrive - Smíchovská střední průmyslová škola/PVA/Zaverecny-Projekt/SocialNetwork/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = b-lh69jpwqls
+[/home/neptuno/Programming/c\#/pva/zaverecna-prace/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-8w5b5koq0s
