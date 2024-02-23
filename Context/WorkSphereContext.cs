@@ -9,6 +9,6 @@ public class WorkSphereContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=/home/neptuno/Programming/c#/pva/zaverecna-prace/Database/WorkSphere.db");
+        optionsBuilder.UseSqlite("Data Source=D:\\Adam\\OneDrive\\OneDrive - Smíchovská střední průmyslová škola\\PVA\\Zaverecny-Projekt\\SocialNetwork/Database/WorkSphere.db");
     }
 }

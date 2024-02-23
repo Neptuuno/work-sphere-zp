@@ -1,18 +1,28 @@
-@model UserModel
-
+@model List<UserModel>
 @{
-    Layout = null;
+    ViewData["Title"] = "User Page";
 }
 
-<!DOCTYPE html>
+<h2>Users List</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.Age</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-    <p>user</p>
-</div>
-</body>
-</html>
