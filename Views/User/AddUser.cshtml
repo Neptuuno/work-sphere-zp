@@ -1,4 +1,4 @@
-﻿@model UserModel
+﻿@model ApplicationUser
 @{
     ViewData["Title"] = "Add Users";
 
@@ -7,7 +7,7 @@
 <form asp-action="AddUser" method="post">
   <div class="mb-3">
     <label class="form-label">Name</label>
-    <input type="text" class="form-control" asp-for="Name">
+    <input type="text" class="form-control" asp-for="UserName">
   </div>
    <div class="mb-3">
       <label class="form-label">Email</label>

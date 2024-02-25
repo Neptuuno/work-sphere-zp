@@ -5,7 +5,7 @@ namespace SocialNetwork.Context;
 
 public class WorkSphereContext : DbContext
 {
-    public DbSet<UserModel> Users { get; set; }
+    public DbSet<ApplicationUser>? Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

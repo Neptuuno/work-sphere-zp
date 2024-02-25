@@ -1,4 +1,4 @@
-@model List<UserModel>
+@model List<ApplicationUser>
 @{
     ViewData["Title"] = "User Page";
 }
@@ -18,7 +18,7 @@
         {
             <tr>
                 <td>@user.Id</td>
-                <td>@user.Name</td>
+                <td>@user.UserName</td>
                 <td>@user.Email</td>
                 <td>@user.Age</td>
             </tr>
