@@ -7,16 +7,18 @@ namespace SocialNetwork.Controllers;
 public class UserController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly WorkSphereContext _context;
 
-    public UserController(ILogger<HomeController> logger)
+    public UserController(ILogger<HomeController> logger, WorkSphereContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
     public IActionResult Index()
     {
         List<ApplicationUser> users = new List<ApplicationUser>();
-        using (var db = new WorkSphereContext())
+        using (var db = _context)
         {
             users = db.Users.ToList();
         }
@@ -31,7 +33,7 @@ public class UserController : Controller
     [HttpPost]
     public IActionResult AddUser(ApplicationUser applicationUser)
     {
-        using (var db = new WorkSphereContext())
+        using (var db = _context)
         {
             db.Add(applicationUser);
             db.SaveChanges();

@@ -1,14 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Models;
 
 namespace SocialNetwork.Context;
 
-public class WorkSphereContext : DbContext
+public class WorkSphereContext : IdentityDbContext<ApplicationUser>
 {
-    public DbSet<ApplicationUser>? Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public WorkSphereContext(DbContextOptions<WorkSphereContext> options)
+        : base(options)
     {
-        optionsBuilder.UseSqlite("Data Source=D:\\Adam\\OneDrive\\OneDrive - Smíchovská střední průmyslová škola\\PVA\\Zaverecny-Projekt\\SocialNetwork/Database/WorkSphere.db");
     }
+
+    //delete later :]
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     optionsBuilder.UseSqlite("Data Source=/home/neptuno/Programming/c#/pva/zaverecna-prace/Database/WorkSphere.db");
+    // }
 }

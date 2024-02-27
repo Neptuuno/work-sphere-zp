@@ -2,16 +2,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<WorkSphereContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("YourConnectionStringName")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("WorkSphereContextConnection")));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<WorkSphereContext>()
-    .AddDefaultTokenProviders();
-
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WorkSphereContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -37,5 +35,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapRazorPages();
 app.Run();
