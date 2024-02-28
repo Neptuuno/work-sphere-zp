@@ -11,6 +11,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Age</th>
+            <th>Posts</th> <!-- Add a header for Posts -->
         </tr>
     </thead>
     <tbody>
@@ -21,8 +22,22 @@
                 <td>@user.UserName</td>
                 <td>@user.Email</td>
                 <td>@user.Age</td>
+                <td>
+                    @if(user.Posts.Any()) 
+                    {
+                        <ul>
+                            @foreach(var post in user.Posts) 
+                            {
+                                <li>@post.Title - @post.PostedOn.ToShortDateString()</li>
+                            }
+                        </ul>
+                    }
+                    else 
+                    {
+                        <text>No posts</text>
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
-

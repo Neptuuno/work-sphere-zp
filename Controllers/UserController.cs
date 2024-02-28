@@ -17,28 +17,11 @@ public class UserController : Controller
 
     public IActionResult Index()
     {
-        List<ApplicationUser> users = new List<ApplicationUser>();
+        List<ApplicationUser> users;
         using (var db = _context)
         {
             users = db.Users.ToList();
         }
         return View(users);
-    }
-
-    public IActionResult AddUser()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult AddUser(ApplicationUser applicationUser)
-    {
-        using (var db = _context)
-        {
-            db.Add(applicationUser);
-            db.SaveChanges();
-        }
-
-        return View();
     }
 }

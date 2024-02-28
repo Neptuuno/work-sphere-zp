@@ -6,14 +6,10 @@ namespace SocialNetwork.Context;
 
 public class WorkSphereContext : IdentityDbContext<ApplicationUser>
 {
+    public DbSet<PostModel>? Posts { get; set; }
     public WorkSphereContext(DbContextOptions<WorkSphereContext> options)
         : base(options)
     {
     }
-
-    //delete later :]
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     optionsBuilder.UseSqlite("Data Source=/home/neptuno/Programming/c#/pva/zaverecna-prace/Database/WorkSphere.db");
-    // }
+    
 }

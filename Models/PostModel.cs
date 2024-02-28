@@ -8,7 +8,9 @@ public class PostModel
     public string Description { get; set; }
     public DateTime PostedOn { get; set; }
     public string Category { get; set; }
-    public int UserId { get; set; }
+    
+    public int ApplicationUserId { get; set; }
+    public virtual ApplicationUser ApplicationUser { get; set; }
 }
 
 public enum PostType
