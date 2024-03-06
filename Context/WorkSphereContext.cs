@@ -12,4 +12,13 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
     {
     }
     
+    // protected override void OnModelCreating(ModelBuilder modelBuilder)
+    // {
+    //     modelBuilder.Entity<ApplicationUser>()
+    //         .HasMany(e => e.Posts)
+    //         .WithOne(e => e.ApplicationUser)
+    //         .HasForeignKey(e => e.ApplicationUserId)
+    //         .IsRequired();
+    // }
+    
 }

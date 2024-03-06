@@ -25,8 +25,8 @@ namespace SocialNetwork.Controllers
         // GET: Post
         public async Task<IActionResult> Index()
         {
-            return _context.Posts != null
-                ? View(await _context.Posts.ToListAsync())
+            return _context.Posts.Include(p => p.ApplicationUser).ToList() != null
+                ? View(await _context.Posts.Include(p => p.ApplicationUser).ToListAsync()) //log the model before view
                 : Problem("Entity set 'WorkSphereContext.Posts'  is null.");
         }
 
@@ -66,14 +66,8 @@ namespace SocialNetwork.Controllers
             {
                 postModel.PostedOn = DateTime.Now;
                 postModel.ApplicationUserId = user.Id;
-                Console.WriteLine(postModel.Id);
-                Console.WriteLine(postModel.PostType);
-                Console.WriteLine(postModel.Title);
-                Console.WriteLine(postModel.Description);
-                Console.WriteLine(postModel.PostedOn);
-                Console.WriteLine(postModel.Category);
-                Console.WriteLine(postModel.ApplicationUserId);
-                Console.WriteLine(postModel.ApplicationUser);
+                ModelState.Remove("ApplicationUserId");
+                ModelState.Remove("ApplicationUser");
                 if (ModelState.IsValid)
                 {
                     _context.Add(postModel);

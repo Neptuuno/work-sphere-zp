@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
 
@@ -17,11 +18,7 @@ public class UserController : Controller
 
     public IActionResult Index()
     {
-        List<ApplicationUser> users;
-        using (var db = _context)
-        {
-            users = db.Users.ToList();
-        }
+        List<ApplicationUser> users = _context.Users.Include(u => u.Posts).ToList();
         return View(users);
     }
 }
