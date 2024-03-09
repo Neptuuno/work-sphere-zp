@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.ViewModels;
 
 namespace SocialNetwork.Controllers
 {
@@ -59,17 +60,22 @@ namespace SocialNetwork.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PostModel postModel)
+        public async Task<IActionResult> Create(PostViewModel postViewModel)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
-            {//TODO(do something with this)
-                postModel.PostedOn = DateTime.Now;
-                postModel.ApplicationUserId = user.Id;
-                ModelState.Remove("ApplicationUserId");
-                ModelState.Remove("ApplicationUser");
+            {
                 if (ModelState.IsValid)
                 {
+                    PostModel postModel = new PostModel
+                    {
+                        PostType = PostType.Looking,
+                        Title = postViewModel.Title,
+                        Description = postViewModel.Description,
+                        PostedOn = DateTime.Now,
+                        Category = postViewModel.Category,
+                        ApplicationUserId = user.Id,
+                    };
                     _context.Add(postModel);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -81,7 +87,7 @@ namespace SocialNetwork.Controllers
                 ModelState.AddModelError(string.Empty, "User not logged in");
             }
 
-            return View(postModel);
+            return View(postViewModel);
         }
 
         // GET: Post/Edit/5
