@@ -7,6 +7,7 @@ public class PostModel
     public string Title { get; set; }
     public string Description { get; set; }
     public DateTime PostedOn { get; set; }
+    // public DateTime UpdatedOn { get; set; }
     public string Category { get; set; }
     
     public string ApplicationUserId { get; set; }

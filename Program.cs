@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
 using SocialNetwork.Context;
+using SocialNetwork.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddDbContext<WorkSphereContext>(options =>
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WorkSphereContext>();
 
+builder.Services.AddScoped<PostService>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -34,6 +36,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Post}/{action=Index}/{id?}");
 app.MapRazorPages();
 app.Run();

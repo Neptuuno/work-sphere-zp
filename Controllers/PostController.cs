@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,26 +10,28 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
 using SocialNetwork.Models.ViewModels;
+using SocialNetwork.Services;
 
 namespace SocialNetwork.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private readonly WorkSphereContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly PostService _postService;
 
-        public PostController(WorkSphereContext context, UserManager<ApplicationUser> userManager)
+        public PostController(WorkSphereContext context, UserManager<ApplicationUser> userManager, PostService postService)
         {
             _context = context;
             _userManager = userManager;
+            _postService = postService;
         }
 
         // GET: Post
         public async Task<IActionResult> Index()
         {
-            return _context.Posts.Include(p => p.ApplicationUser).ToList() != null
-                ? View(await _context.Posts.Include(p => p.ApplicationUser).ToListAsync())
-                : Problem("Entity set 'WorkSphereContext.Posts'  is null.");
+            return View(await _postService.GetAllPostsAsync());
         }
 
         // GET: Post/Details/5
@@ -36,14 +39,13 @@ namespace SocialNetwork.Controllers
         {
             if (id == null || _context.Posts == null)
             {
-                return NotFound();
+                return StatusCode(404, "Not Found, Sorry!");
             }
 
-            var postModel = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            PostModel? postModel = await _postService.GetPostByIdAsync(id.Value);
             if (postModel == null)
             {
-                return NotFound();
+                return StatusCode(404, "Not Found, Sorry!");
             }
 
             return View(postModel);
@@ -67,17 +69,7 @@ namespace SocialNetwork.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    PostModel postModel = new PostModel
-                    {
-                        PostType = PostType.Looking,
-                        Title = postViewModel.Title,
-                        Description = postViewModel.Description,
-                        PostedOn = DateTime.Now,
-                        Category = postViewModel.Category,
-                        ApplicationUserId = user.Id,
-                    };
-                    _context.Add(postModel);
-                    await _context.SaveChangesAsync();
+                    await _postService.CreatePostAsync(postViewModel, user.Id);
                     return RedirectToAction(nameof(Index));
                 }
                 ModelState.AddModelError(string.Empty, "Error when creating new post");
@@ -98,13 +90,15 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var postModel = await _context.Posts.FindAsync(id);
+            var postModel = await _postService.GetPostByIdAsync(id.Value);
             if (postModel == null)
             {
                 return NotFound();
             }
 
-            return View(postModel);
+            var postViewModel = _postService.CreateViewPostModelByModel(postModel);
+
+            return View(postViewModel);
         }
 
         // POST: Post/Edit/5
@@ -112,37 +106,27 @@ namespace SocialNetwork.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("Id,PostType,Title,Description,PostedOn,Category,ApplicationUserId")] PostModel postModel)
+        public async Task<IActionResult> Edit(int id, PostViewModel postViewModel)
         {
-            if (id != postModel.Id)
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
+            var postModel = await _postService.GetPostByIdAsync(id);
+            var postOwnerId = postModel.ApplicationUserId;
+            if (user == null)
             {
-                return NotFound();
+                return BadRequest("User not logged in");
+            }
+            if (postOwnerId != user.Id)
+            {
+                return BadRequest("Unauthorized");
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(postModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PostModelExists(postModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
+                await _postService.UpdatePostAsync(postViewModel, user.Id);
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(postModel);
+            return View(postViewModel);
         }
 
         // GET: Post/Delete/5
@@ -153,8 +137,7 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var postModel = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var postModel = await _postService.GetPostByIdAsync(id.Value);
             if (postModel == null)
             {
                 return NotFound();
@@ -168,18 +151,19 @@ namespace SocialNetwork.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Posts == null)
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
+            var postModel = await _postService.GetPostByIdAsync(id);
+            var postOwnerId = postModel.ApplicationUserId;
+            if (user == null)
             {
-                return Problem("Entity set 'WorkSphereContext.Posts'  is null.");
+                return BadRequest("User not logged in");
             }
-
-            var postModel = await _context.Posts.FindAsync(id);
-            if (postModel != null)
+            if (postOwnerId != user.Id)
             {
-                _context.Posts.Remove(postModel);
+                return BadRequest("Unauthorized");
             }
-
-            await _context.SaveChangesAsync();
+            
+            await _postService.DeletePostAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
