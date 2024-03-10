@@ -10,7 +10,7 @@ public class PostModel
 
     public DateTime PostedOn { get; set; }
      public DateTime? UpdatedOn { get; set; }
-    public Category Category { get; set; }
+    public string Category { get; set; }
 
     // public List<CommentModel> Comments { get; set; }
     public string ApplicationUserId { get; set; }

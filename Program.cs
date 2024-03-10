@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
 using SocialNetwork.Context;
+using SocialNetwork.Hubs;
 using SocialNetwork.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 builder.Services.AddScoped<PostService>();
 // Add services to the container.
+builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -38,4 +40,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Post}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapHub<ChatHub>("/chat");
 app.Run();
