@@ -20,7 +20,12 @@ public class PostService
 
     public async Task<List<PostModel>> GetAllPostsAsync()
     {
-        return await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
+       return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
+    }
+    
+    public async Task<List<PostModel>> GetAllPostsAsyncSortedByIndex(string userId)
+    {
+        return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
     }
 
     public async Task<PostModel> GetPostByIdAsync(int id)
@@ -35,12 +40,12 @@ public class PostService
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdatePostAsync(PostViewModel postViewModel, string userId)
+    public async Task UpdatePostAsync(PostModel postModel, PostViewModel postViewModel, string userId)
     {
-        var postModel = CreatePostModelByViewModel(postViewModel, userId);
+        var updatedPostModel = UpdatePostModelByViewModel(postModel, postViewModel, userId);
         try
         {
-            _context.Update(postModel);
+            _context.Update(updatedPostModel);
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
@@ -64,6 +69,11 @@ public class PostService
         }
     }
 
+    public bool IsAuthorized(ApplicationUser user, PostModel post)
+    {
+        return post.ApplicationUserId == user.Id;
+    }
+
     public PostModel CreatePostModelByViewModel(PostViewModel postViewModel, string userId)
     {
         return new PostModel
@@ -72,6 +82,19 @@ public class PostService
             Title = postViewModel.Title,
             Description = postViewModel.Description,
             PostedOn = DateTime.Now,
+            Category = postViewModel.Category,
+            ApplicationUserId = userId,
+        };
+    }
+    public PostModel UpdatePostModelByViewModel(PostModel postModel, PostViewModel postViewModel, string userId)
+    {
+        return new PostModel
+        {
+            PostType = postViewModel.PostType,
+            Title = postViewModel.Title,
+            Description = postViewModel.Description,
+            PostedOn = postModel.PostedOn,
+            UpdatedOn = DateTime.Now,
             Category = postViewModel.Category,
             ApplicationUserId = userId,
         };
