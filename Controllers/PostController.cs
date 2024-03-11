@@ -147,9 +147,9 @@ public class PostController : Controller
     }
 
     // POST: Post/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null)

@@ -15,7 +15,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 builder.Services.AddScoped<PostService>();
 // Add services to the container.
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.EnableDetailedErrors = true;
+});
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
