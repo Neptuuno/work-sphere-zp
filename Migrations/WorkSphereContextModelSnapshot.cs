@@ -224,7 +224,7 @@ namespace SocialNetwork.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatModel");
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
@@ -239,7 +239,7 @@ namespace SocialNetwork.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatUser");
+                    b.ToTable("ChatUsers");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>

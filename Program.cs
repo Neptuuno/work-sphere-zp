@@ -14,6 +14,7 @@ builder.Services.AddDbContext<WorkSphereContext>(options =>
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WorkSphereContext>();
 
 builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<ChatService>();
 // Add services to the container.
 builder.Services.AddSignalR(hubOptions =>
 {
@@ -43,5 +44,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Post}/{action=Index}/{id?}");
 app.MapRazorPages();
-app.MapHub<ChatHub>("/chat");
+app.MapHub<ChatHub>("/chathub");
 app.Run();
