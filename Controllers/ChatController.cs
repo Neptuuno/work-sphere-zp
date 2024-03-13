@@ -32,6 +32,10 @@ namespace SocialNetwork.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
             var chats = await _chatService.GetChatsForUser(user);
             return View(chats);
         }

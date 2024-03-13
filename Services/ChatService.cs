@@ -16,17 +16,16 @@ public class ChatService
         _userManager = userManager;
     }
 
-    public async Task<IEnumerable<ChatModel>> GetChatsForUser(ApplicationUser user)
+    public async Task<List<ChatModel?>> GetChatsForUser(ApplicationUser user)
     {
-        var chatUsers = user.ChatUsers;
-        var chats = new List<ChatModel>();
-        foreach (var chatUser in chatUsers)
+        var chats = await _context.ChatUsers
+            .Where(cu => cu.UserId == user.Id)
+            .Include(cu => cu.Chat)
+            .Select(cu => cu.Chat)
+            .ToListAsync();
+        if (chats == null)
         {
-            var chat = chatUser.Chat;
-            if (chat != null)
-            {
-                chats.Add(chat);
-            }
+            return null;
         }
 
         return chats;
@@ -34,25 +33,23 @@ public class ChatService
 
     public async Task<ChatModel> GetChatById(ApplicationUser user, int id)
     {
-        var chatUsers = user.ChatUsers;
-        var chat = chatUsers.First(c => c.ChatId == id).Chat;
+        var chat = await _context.Chats
+            .Where(c => c.Id == id)
+            .Include(c => c.ChatUsers)
+            .ThenInclude(cu => cu.User)
+            .FirstOrDefaultAsync();
         if (chat == null)
         {
             throw new Exception("Invalid id");
         }
 
-        if (chat.ChatUsers.Contains(chatUsers.First(c => c.UserId == user.Id)))
-        {
-            return chat;
-        }
-
-        throw new Exception("User is not in chat");
+        return chat;
     }
 
-    public async Task<ChatModel> CreateChat(string currentUserID, string secondUserID)
+    public async Task<ChatModel> CreateChat(string currentUserID, string otherUserID)
     {
         var currentUser = await _userManager.FindByIdAsync(currentUserID);
-        var secondUser = await _userManager.FindByIdAsync(secondUserID);
+        var secondUser = await _userManager.FindByIdAsync(otherUserID);
 
         if (currentUser == null || secondUser == null)
         {
@@ -62,19 +59,19 @@ public class ChatService
         var existingChat = _context.Chats
             .Include(c => c.ChatUsers)
             .FirstOrDefault(c =>
-                c.ChatUsers.Any(cu => cu.UserId == currentUserID) && c.ChatUsers.Any(cu => cu.UserId == secondUserID));
+                c.ChatUsers.Any(cu => cu.UserId == currentUserID) && c.ChatUsers.Any(cu => cu.UserId == otherUserID));
 
         if (existingChat != null)
         {
             return null;
         }
-        
+
         var chat = new ChatModel
         {
             ChatUsers = new List<ChatUser>
             {
-                new ChatUser {User = currentUser},
-                new ChatUser {User = secondUser}
+                new ChatUser { User = currentUser },
+                new ChatUser { User = secondUser }
             }
         };
         _context.Chats.Add(chat);
