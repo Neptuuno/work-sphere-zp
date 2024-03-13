@@ -1,0 +1,71 @@
+@model SocialNetwork.Models.ViewModels.ChatViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Chat Details</h4>
+    <hr/>
+    <h4>You: @Model.UserOther.UserName</h4>
+    <h4>Other: @Model.UserSelf.UserName</h4>
+</div>
+
+<div>
+    <input type="text" id="messageInput"/>
+    <input type="button" id="sendButton" value="Send"/>
+    <ul id="messagesList">
+        @foreach (var message in Model.Messages)
+        {
+            var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
+            <li class="@messageClass">@message.Content</li>
+        }
+    </ul>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+"use strict";
+
+let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+let senderId = '@Model.UserSelf.Id';
+let receiverId = '@Model.UserOther.Id';
+let chatId = parseInt('@Model.Id');
+
+connection.start().catch(function (err) {
+    return console.error(err.toString());
+});
+
+connection.on("ReceiveMessage", function (message) {
+    let li = document.createElement("li");
+    li.textContent = message;
+    document.getElementById("messagesList").appendChild(li);
+});
+
+document.getElementById("sendButton").addEventListener("click", function (event) {
+    let message = document.getElementById("messageInput").value;
+    connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
+        return console.error(err.toString());
+    });
+    event.preventDefault();
+});
+</script>
+
+<style>
+    .self-message{
+    color: green;
+    }
+    
+    .other-message{
+    color: red;
+    }
+    
+</style>

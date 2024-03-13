@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialNetwork.Context;
 
@@ -10,9 +11,11 @@ using SocialNetwork.Context;
 namespace SocialNetwork.Migrations
 {
     [DbContext(typeof(WorkSphereContext))]
-    partial class WorkSphereContextModelSnapshot : ModelSnapshot
+    [Migration("20240310123012_RemovedUserAge")]
+    partial class RemovedUserAge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.16");
@@ -157,9 +160,6 @@ namespace SocialNetwork.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
@@ -216,59 +216,6 @@ namespace SocialNetwork.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SocialNetwork.Models.ChatModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Chats");
-                });
-
-            modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ChatId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("UserId", "ChatId");
-
-                    b.HasIndex("ChatId");
-
-                    b.ToTable("ChatUsers");
-                });
-
-            modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ChatId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SenderId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("SocialNetwork.Models.PostModel", b =>
                 {
                     b.Property<int>("Id")
@@ -295,9 +242,6 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -358,42 +302,6 @@ namespace SocialNetwork.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
-                {
-                    b.HasOne("SocialNetwork.Models.ChatModel", "Chat")
-                        .WithMany("ChatUsers")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialNetwork.Models.ApplicationUser", "User")
-                        .WithMany("ChatUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>
-                {
-                    b.HasOne("SocialNetwork.Models.ChatModel", "Chat")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialNetwork.Models.ApplicationUser", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId");
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("SocialNetwork.Models.PostModel", b =>
                 {
                     b.HasOne("SocialNetwork.Models.ApplicationUser", "ApplicationUser")
@@ -407,16 +315,7 @@ namespace SocialNetwork.Migrations
 
             modelBuilder.Entity("SocialNetwork.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("ChatUsers");
-
                     b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("SocialNetwork.Models.ChatModel", b =>
-                {
-                    b.Navigation("ChatUsers");
-
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

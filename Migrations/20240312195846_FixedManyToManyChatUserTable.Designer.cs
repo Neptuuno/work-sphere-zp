@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialNetwork.Context;
 
@@ -10,9 +11,11 @@ using SocialNetwork.Context;
 namespace SocialNetwork.Migrations
 {
     [DbContext(typeof(WorkSphereContext))]
-    partial class WorkSphereContextModelSnapshot : ModelSnapshot
+    [Migration("20240312195846_FixedManyToManyChatUserTable")]
+    partial class FixedManyToManyChatUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.16");
@@ -224,7 +227,7 @@ namespace SocialNetwork.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chats");
+                    b.ToTable("ChatModel");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
@@ -239,7 +242,7 @@ namespace SocialNetwork.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatUsers");
+                    b.ToTable("ChatUser");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>

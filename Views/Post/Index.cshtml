@@ -5,36 +5,42 @@
 }
 
 <h1>Index</h1>
-
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PostType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostedOn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApplicationUserId)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PostType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostedOn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdatedOn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ApplicationUserId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ApplicationUser.UserName)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.PostType)
@@ -49,10 +55,24 @@
                 @Html.DisplayFor(modelItem => item.PostedOn)
             </td>
             <td>
+                @if (item.UpdatedOn != null)
+                {
+                    @Html.DisplayFor(modelItem => item.UpdatedOn)
+                }
+                else
+                {
+                    <p>not updated</p>
+                }
+
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Category)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ApplicationUserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -60,6 +80,6 @@
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

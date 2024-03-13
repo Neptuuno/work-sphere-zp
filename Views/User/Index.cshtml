@@ -11,7 +11,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Age</th>
-            <th>Posts</th> <!-- Add a header for Posts -->
+            <th>Posts</th>
         </tr>
     </thead>
     <tbody>
@@ -19,7 +19,7 @@
         {
             <tr>
                 <td>@user.Id</td>
-                <td>@user.UserName</td>
+                <td><a asp-controller="User" asp-action="Detail" asp-route-id="@user.Id">@user.UserName</a></td>
                 <td>@user.Email</td>
                 <td>@user.Age</td>
                 <td>
