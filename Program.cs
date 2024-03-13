@@ -11,15 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<WorkSphereContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("WorkSphereContextConnection")));
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WorkSphereContext>();
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<WorkSphereContext>();
 
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ChatService>();
 // Add services to the container.
-builder.Services.AddSignalR(hubOptions =>
-{
-    hubOptions.EnableDetailedErrors = true;
-});
+builder.Services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
