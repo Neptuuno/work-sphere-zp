@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.ViewModels;
 using SocialNetwork.Services;
 
 namespace SocialNetwork.Controllers
@@ -36,8 +37,27 @@ namespace SocialNetwork.Controllers
             {
                 return NotFound();
             }
+
             var chats = await _chatService.GetChatsForUser(user);
-            return View(chats);
+            var chatViewModels = new List<ChatViewModel>();
+            foreach (var chat in chats)
+            {
+                if (chat == null)
+                {
+                    break;
+                }
+                var chatViewModel = new ChatViewModel
+                {
+                    Id = chat.Id,
+                    UserSelf = user,
+                    UserOther = await _chatService.GetOtherUser(chat, user),
+                    Messages = new List<MessageModel>(),
+                };
+                chatViewModels.Add(chatViewModel);
+            }
+            
+
+            return View(chatViewModels);
         }
 
         // GET: Chats/Details/5
@@ -55,8 +75,16 @@ namespace SocialNetwork.Controllers
             }
 
             var chat = await _chatService.GetChatById(user, id.Value);
+            
+            var chatViewModel = new ChatViewModel
+            {
+                Id = chat.Id,
+                UserSelf = user,
+                UserOther = await _chatService.GetOtherUser(chat, user),
+                Messages = await _chatService.GetMessagesForChat(chat),
+            };
 
-            return View(chat);
+            return View(chatViewModel);
         }
 
         //POST: Chat/Create

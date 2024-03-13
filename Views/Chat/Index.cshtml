@@ -1,4 +1,4 @@
-@model IEnumerable<SocialNetwork.Models.ChatModel>
+@model IEnumerable<SocialNetwork.Models.ViewModels.ChatViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,19 +9,20 @@
 
 <table class="table">
     <thead>
-        <tr>
-            <th></th>
-        </tr>
+    <tr>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
             <td>
-                <h3>@item.Id</h3>
+                    <h3>@item.UserOther.UserName</h3>
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

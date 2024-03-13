@@ -20,6 +20,7 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
+        //many to many configuration
         modelBuilder.Entity<ChatUser>()
             .HasKey(cu => new { cu.UserId, cu.ChatId });
 

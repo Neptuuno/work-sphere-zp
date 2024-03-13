@@ -3,12 +3,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Models;
+using SocialNetwork.Services;
 
 namespace SocialNetwork.Hubs;
 
 public class ChatHub : Hub
 {
+    private readonly ChatService _chatService;
     private static readonly Dictionary<string, string> UserConnectionMap = new Dictionary<string, string>();
+
+    public ChatHub(ChatService chatService)
+    {
+        _chatService = chatService;
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -36,16 +43,18 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    // public async Task SendMessage(string senderId, string receiverId, string message)
-    // {
-    //     // if (UserConnectionMap.TryGetValue(receiverId, out var connectionId))
-    //     // {
-    //     //     // await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderId, message);
-    //     //     await Clients.All.SendAsync("ReceiveMessage", senderId, message);
-    //     // }
-    // }
-    public async Task SendMessage(string senderId, string message)
+    public async Task SendMessage(int chatId, string senderId, string receiverId, string message)
     {
-        await Clients.All.SendAsync("ReceiveMessage", senderId, message);
+        var newMessage = await _chatService.CreateMessage(chatId, senderId, message);
+
+        var senderConnectionId = UserConnectionMap[senderId];
+
+        //TODO Send complex message instead of message content
+        await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessage.Content);
+
+        if (UserConnectionMap.TryGetValue(receiverId, out var receiverConnectionId))
+        {
+            await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessage.Content);
+        }
     }
 }

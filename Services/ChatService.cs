@@ -20,6 +20,7 @@ public class ChatService
     {
         var chats = await _context.ChatUsers
             .Where(cu => cu.UserId == user.Id)
+            .Include(cu => cu.User)
             .Include(cu => cu.Chat)
             .Select(cu => cu.Chat)
             .ToListAsync();
@@ -78,5 +79,59 @@ public class ChatService
         await _context.SaveChangesAsync();
 
         return chat;
+    }
+    
+    public async Task<List<MessageModel>> GetMessagesForChat(ChatModel chat)
+    {
+        var messages = await _context.Chats
+            .Where(c => c.Id == chat.Id)
+            .Include(c => c.Messages)
+            .ThenInclude(m => m.Sender)
+            .SelectMany(c => c.Messages)
+            .ToListAsync();
+
+        return messages;
+    }
+    public async Task<MessageModel> CreateMessage(int chatId, string userId, string content)
+    {
+        var message = new MessageModel
+        {
+            ChatId = chatId,
+            SenderId = userId,
+            Content = content,
+            Timestamp = DateTime.Now
+        };
+
+        _context.Messages.Add(message);
+        await _context.SaveChangesAsync();
+
+        return message;
+    }
+    
+    public async Task<List<ApplicationUser>> GetOtherUsers(IEnumerable<ChatModel> chats, ApplicationUser user)
+    {
+        var otherUsers = new List<ApplicationUser>();
+        foreach (var chat in chats)
+        {
+            var otherUser = await _context.ChatUsers
+                .Where(cu => cu.ChatId == chat.Id && cu.UserId != user.Id)
+                .Include(cu => cu.User)
+                .Select(cu => cu.User)
+                .FirstOrDefaultAsync();
+            if (otherUser != null)
+            {
+                otherUsers.Add(otherUser);
+            }
+        }
+        return otherUsers;
+    }
+    public async Task<ApplicationUser> GetOtherUser(ChatModel chat, ApplicationUser user)
+    {
+        var otherUser = await _context.ChatUsers
+            .Where(cu => cu.ChatId == chat.Id && cu.UserId != user.Id)
+            .Include(cu => cu.User)
+            .Select(cu => cu.User)
+            .FirstOrDefaultAsync();
+        return otherUser;
     }
 }
