@@ -1,0 +1,57 @@
+@model List<ApplicationUser>
+@{
+    ViewData["Title"] = "User Page";
+}
+
+<h2>Create Role</h2>
+<form asp-controller="Admin" asp-action="CreateRole" method="post">
+    <input type="text" name="roleName" placeholder="Role name" required />
+    <input type="submit" value="Create Role" />
+</form>
+
+<h2>Users List</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Age</th>
+        <th>Posts</th>
+        <th>Assign Role</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var user in Model)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td><a asp-controller="User" asp-action="Detail" asp-route-id="@user.Id">@user.UserName</a></td>
+            <td>@user.Email</td>
+            <td>@user.Age</td>
+            <td>
+                @if(user.Posts.Any())
+                {
+                    <ul>
+                        @foreach(var post in user.Posts)
+                        {
+                            <li>@post.Title - @post.PostedOn.ToShortDateString()</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <text>No posts</text>
+                }
+            </td>
+            <td>
+                <form asp-controller="Admin" asp-action="AssignRole" method="post">
+                    <input type="hidden" name="userId" value="@user.Id" />
+                    <input type="text" name="roleName" placeholder="Role name" required />
+                    <input type="submit" value="Assign Role" />
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
