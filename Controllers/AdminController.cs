@@ -23,33 +23,34 @@ public class AdminController : Controller
     public IActionResult Index()
     {
         List<ApplicationUser> users = _userManager.Users.Include(u => u.Posts).ToList();
+        ViewBag.Roles = _roleManager.Roles.ToList();
         return View(users);
     }
-    
+
 
     // POST: Admin/CreateRole
     // POST: RoleController/Create  
-    [HttpPost]  
-    [ValidateAntiForgeryToken]  
-    public async Task<ActionResult> CreateRole(string roleName)  
-    {  
-        try  
-        {  
-            if (!string.IsNullOrEmpty(roleName))  
-            {  
-                if (!(await _roleManager.RoleExistsAsync(roleName)))  
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<ActionResult> CreateRole(string roleName)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(roleName))
+            {
+                if (!(await _roleManager.RoleExistsAsync(roleName)))
                 {
                     await _roleManager.CreateAsync(new IdentityRole(roleName));
-                    return RedirectToAction("Index");  
-                } 
+                    return RedirectToAction("Index");
+                }
             }
 
             return RedirectToAction("Index");
-        }  
+        }
         catch
         {
             return RedirectToAction("Index");
-        }  
+        }
     }
 
     // POST: Admin/AssignRole
@@ -63,6 +64,21 @@ public class AdminController : Controller
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST: Admin/DeleteUser
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user != null)
+        {
+            await _userManager.DeleteAsync(user);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }
