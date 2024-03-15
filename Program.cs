@@ -17,6 +17,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<FileService>(_ => new FileService(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "file-storage")));
 // Add services to the container.
 builder.Services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 builder.Services.AddControllersWithViews();

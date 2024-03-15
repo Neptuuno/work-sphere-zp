@@ -19,8 +19,14 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<ApplicationUser>()
+            .HasMany(u => u.Posts)
+            .WithOne(p => p.ApplicationUser)
+            .HasForeignKey(p => p.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        //many to many configuration
+        //many to many configuration Chat User
         modelBuilder.Entity<ChatUser>()
             .HasKey(cu => new { cu.UserId, cu.ChatId });
 

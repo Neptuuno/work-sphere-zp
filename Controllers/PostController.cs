@@ -62,14 +62,14 @@ public class PostController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(PostViewModel postViewModel)
+    public async Task<IActionResult> Create(PostViewModel postViewModel, IFormFile? ImageUrl)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user != null)
         {
             if (ModelState.IsValid)
             {
-                await _postService.CreatePostAsync(postViewModel, user.Id);
+                await _postService.CreatePostAsync(postViewModel, user.Id, ImageUrl);
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError(string.Empty, "Error when creating new post");
@@ -106,7 +106,7 @@ public class PostController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, PostViewModel postViewModel)
+    public async Task<IActionResult> Edit(int id, PostViewModel postViewModel, IFormFile? image)
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -122,7 +122,7 @@ public class PostController : Controller
 
         if (ModelState.IsValid)
         {
-            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id);
+            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, image);
             return RedirectToAction(nameof(Index));
         }
 

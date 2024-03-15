@@ -11,11 +11,13 @@ public class PostService
 {
     private readonly WorkSphereContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly FileService _fileService;
 
-    public PostService(WorkSphereContext context, UserManager<ApplicationUser> userManager)
+    public PostService(WorkSphereContext context, UserManager<ApplicationUser> userManager, FileService fileService)
     {
         _context = context;
         _userManager = userManager;
+        _fileService = fileService;
     }
 
     public async Task<List<PostModel>> GetAllPostsAsync()
@@ -33,16 +35,26 @@ public class PostService
         return await _context.Posts.FindAsync(id);
     }
 
-    public async Task CreatePostAsync(PostViewModel postViewModel, string userId)
+    public async Task CreatePostAsync(PostViewModel postViewModel, string userId, IFormFile? image)
     {
         PostModel postModel = CreatePostModelByViewModel(postViewModel, userId);
+        if (image != null)
+        {
+            postModel.ImageUrl = await _fileService.SaveImageAsync(image, userId, "posts");
+        }
         _context.Add(postModel);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdatePostAsync(PostModel postModel, PostViewModel postViewModel, string userId)
+    public async Task UpdatePostAsync(PostModel postModel, PostViewModel postViewModel, string userId, IFormFile? image)
     {
         var updatedPostModel = UpdatePostModelByViewModel(postModel, postViewModel, userId);
+        if (image != null)
+        {
+            string? existingFileName = Path.GetFileName(postModel.ImageUrl);
+            updatedPostModel.ImageUrl = await _fileService.SaveImageAsync(image, userId, "posts", existingFileName);
+
+        }
         try
         {
             _context.Update(updatedPostModel);
