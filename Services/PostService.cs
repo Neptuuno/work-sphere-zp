@@ -53,7 +53,6 @@ public class PostService
         {
             string? existingFileName = Path.GetFileName(postModel.ImageUrl);
             updatedPostModel.ImageUrl = await _fileService.SaveImageAsync(image, userId, "posts", existingFileName);
-
         }
         try
         {
@@ -100,16 +99,15 @@ public class PostService
     }
     public PostModel UpdatePostModelByViewModel(PostModel postModel, PostViewModel postViewModel, string userId)
     {
-        return new PostModel
-        {
-            PostType = postViewModel.PostType,
-            Title = postViewModel.Title,
-            Description = postViewModel.Description,
-            PostedOn = postModel.PostedOn,
-            UpdatedOn = DateTime.Now,
-            Category = postViewModel.Category,
-            ApplicationUserId = userId,
-        };
+        
+        postModel.PostType = postViewModel.PostType;
+        postModel.Title = postViewModel.Title;
+        postModel.Description = postViewModel.Description;
+        postModel.UpdatedOn = DateTime.Now;
+        postModel.Category = postViewModel.Category;
+        postModel.ApplicationUserId = userId;
+
+        return postModel;
     }
 
     public PostViewModel CreateViewPostModelByModel(PostModel postModel)

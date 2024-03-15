@@ -73,8 +73,9 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteUser(string userId)
     {
+        var currentUser = await _userManager.GetUserAsync(User);
         var user = await _userManager.FindByIdAsync(userId);
-        if (user != null)
+        if (user != null && user != currentUser)
         {
             await _userManager.DeleteAsync(user);
         }

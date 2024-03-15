@@ -51,6 +51,7 @@
                 <form asp-controller="Admin" asp-action="AssignRole" method="post">
                     <input type="hidden" name="userId" value="@user.Id"/>
                     <select name="roleName" required>
+                        <option >Nothing selected</option>
                         @foreach (var role in ViewBag.Roles)
                         {
                             <option value="@role.Name">@role.Name</option>
@@ -62,7 +63,7 @@
             <td>
                 <form asp-controller="Admin" asp-action="DeleteUser" method="post">
                     <input type="hidden" name="userId" value="@user.Id"/>
-                    <input type="submit" value="Delete User"/>
+                    <input type="submit"  value="Delete User"/>
                 </form>
             </td>
         </tr>

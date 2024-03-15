@@ -10,11 +10,14 @@ public class UserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly WorkSphereContext _context;
+    private readonly FileService _fileService;
 
-    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context)
+
+    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context, FileService fileService)
     {
         _userManager = userManager;
         _context = context;
+        _fileService = fileService;
     }
 
     public List<ApplicationUser> GetAllUsers()
@@ -27,32 +30,32 @@ public class UserService
         return _userManager.FindByIdAsync(id).Result;
     }
 
-    public async Task<IdentityResult> EditUser(ApplicationUser user)
+    public async Task UpdateUser(ApplicationUser user ,Settings.InputModel newUserModel, IFormFile? image)
     {
-        return await _userManager.UpdateAsync(user);
+        await SetUserImage(user, image);
+        await _userManager.UpdateAsync(GetUserModel(newUserModel, user));
+    }
+    public async Task SetUserImage( ApplicationUser user, IFormFile? image)
+    {
+        if (image != null)
+        {
+            string? existingFileName = Path.GetFileName(user.ImageUrl);
+            user.ImageUrl = await _fileService.SaveImageAsync(image, user.Id, "users", existingFileName);
+        }
+    }
+    
+    public Settings.InputModel GetInputModel(ApplicationUser user)
+    {
+        return new Settings.InputModel
+        {
+            Age = user.Age,
+            ImageUrl = user.ImageUrl,
+        };
     }
 
-    public async Task<IdentityResult?> DeleteUser(string id)
+    private ApplicationUser GetUserModel(Settings.InputModel inputModel, ApplicationUser user)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user != null)
-        {
-            return await _userManager.DeleteAsync(user);
-        }
-
-        return null;
-    }
-    public Settings.InputModel GetUserSettings(string id)
-    {
-        var user = _userManager.FindByIdAsync(id).Result;
-        if (user != null)
-        {
-            return new Settings.InputModel
-            {
-                Age = user.Age,
-            };
-        }
-
-        return null;
+        user.Age = inputModel.Age;
+        return user;
     }
 }

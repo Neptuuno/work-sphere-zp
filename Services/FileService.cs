@@ -32,13 +32,22 @@ public class FileService
         {
             Directory.CreateDirectory(directoryPath);
         }
+        else if (existingName != null)
+        {
+            string oldFilePath = Path.Combine(directoryPath, existingName);
+            if (File.Exists(oldFilePath))
+            {
+                File.Delete(oldFilePath);
+            }
+        }
 
         using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(fileStream);
         }
 
-        return filePath;
+        string relativeFilePath = Path.GetRelativePath(_targetFolder, filePath);
+        return relativeFilePath;
     }
 
     private bool IsImage(IFormFile file)

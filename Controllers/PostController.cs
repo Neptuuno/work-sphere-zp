@@ -106,7 +106,7 @@ public class PostController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, PostViewModel postViewModel, IFormFile? image)
+    public async Task<IActionResult> Edit(int id, PostViewModel postViewModel, IFormFile? ImageUrl)
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -122,7 +122,7 @@ public class PostController : Controller
 
         if (ModelState.IsValid)
         {
-            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, image);
+            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
             return RedirectToAction(nameof(Index));
         }
 

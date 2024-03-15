@@ -21,6 +21,9 @@ public class Settings : PageModel
 
     [BindProperty]
     public InputModel Input { get; set; }
+
+    [BindProperty] 
+    public IFormFile Image { get; set; }
     
     public class InputModel : ApplicationUserViewModel
     {
@@ -35,15 +38,12 @@ public class Settings : PageModel
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        Input = new InputModel
-        {
-            Age = user.Age
-        };
+        Input = _userService.GetInputModel(user);
         
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()//TODO change to handle in user service
+    public async Task<IActionResult> OnPostAsync()
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -56,8 +56,7 @@ public class Settings : PageModel
             return Page();
         }
 
-        user.Age = Input.Age;
-        await _userManager.UpdateAsync(user);
+        await _userService.UpdateUser(user,Input, Image);
 
         return RedirectToPage();
     }
