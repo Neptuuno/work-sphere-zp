@@ -15,6 +15,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<WorkSphereContext>();
 
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<FileService>(_ => new FileService(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "file-storage")));

@@ -24,7 +24,8 @@ public class FileService
             throw new Exception("File size exceeded. The maximum allowed size is 5MB.");
         }
 
-        string uniqueFileName = existingName ?? Path.GetRandomFileName();
+        string fileExtension = Path.GetExtension(file.FileName);
+        string uniqueFileName = existingName ?? $"{Guid.NewGuid()}{fileExtension}";
         string filePath = Path.Combine(_targetFolder, dirName, userId, uniqueFileName);
         string directoryPath = Path.Combine(_targetFolder, dirName, userId);
         if (!Directory.Exists(directoryPath))

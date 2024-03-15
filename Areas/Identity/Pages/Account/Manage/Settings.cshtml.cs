@@ -4,16 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SocialNetwork.Models;
 using SocialNetwork.Models.ViewModels;
+using SocialNetwork.Services;
 
 namespace SocialNetwork.Areas.Identity.Pages.Account.Manage;
 
 public class Settings : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserService _userService;
 
-    public Settings(UserManager<ApplicationUser> userManager)
+    public Settings(UserManager<ApplicationUser> userManager, UserService userService)
     {
         _userManager = userManager;
+        _userService = userService;
     }
 
     [BindProperty]
@@ -40,7 +43,7 @@ public class Settings : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()//TODO change to handle in user service
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
