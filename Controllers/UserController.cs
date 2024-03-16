@@ -9,15 +9,13 @@ namespace SocialNetwork.Controllers;
 
 public class UserController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly WorkSphereContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly UserService _userService;
 
-    public UserController(ILogger<HomeController> logger, WorkSphereContext context,
+    public UserController(WorkSphereContext context,
         UserManager<ApplicationUser> userManager, UserService userService)
     {
-        _logger = logger;
         _context = context;
         _userManager = userManager;
         _userService = userService;
