@@ -8,7 +8,11 @@ module.exports = {
     fontFamily: {
         'sans': ['Outfit', 'sans-serif'],
     },
-    extend: {},
+    extend: {
+      boxShadow: {
+        'offset': '4px 4px 0px 0px #000000',
+      }
+    },
   },
   plugins: [],
 }
