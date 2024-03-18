@@ -1,0 +1,17 @@
+@using SocialNetwork.Services
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ChatService ChatService
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    if (currentUser == null)
+    {
+        return;
+    }
+    var chats = await ChatService.GetChatsForUser(currentUser);
+}
+@foreach(var chat in chats)
+{
+    var otherUser = await ChatService.GetOtherUser(chat, currentUser);
+    <a asp-controller="Chat" asp-action="Details" asp-route-id="@chat.Id">@otherUser.UserName</a>
+}

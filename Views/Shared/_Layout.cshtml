@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - WorkSphere</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/SocialNetwork.styles.css" asp-append-version="true"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true"/>
 </head>
 <body>
@@ -22,7 +24,7 @@
                         </li>
                     }
                     <li class="">
-                        <a class="" asp-area="" asp-controller="Post" asp-action="Index">Home</a>
+                        <a class="text-red-500" asp-area="" asp-controller="Post" asp-action="Index">Home</a>
                     </li>
                     <li class="">
                         <a class="" asp-area="" asp-controller="Post" asp-action="Create">New Post</a>
@@ -37,7 +39,10 @@
                         <a class="" asp-area="" asp-controller="Chat" asp-action="Index">Chats</a>
                     </li>
                     <li>
-                        <a asp-area="Identity" asp-page="/Account/Manage/Settings" >Profile</a>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Settings">Profile</a>
+                    </li>
+                    <li>
+                        <partial name="_LoginPartial"/>
                     </li>
                 </ul>
             </nav>
@@ -48,10 +53,9 @@
         </main>
         <aside class="sticky flex justify-end top-8 hidden w-64 shrink-0 lg:block">
             <!-- Right column area -->
-            @foreach(var chat in  ){
-            <div>
-                <p class="text-right">something</p>
-            </div>
+            @if (User != null)
+            {
+                <partial name="_ChatPartial"/>
             }
         </aside>
 

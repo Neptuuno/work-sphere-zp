@@ -5,6 +5,9 @@ module.exports = {
     './Views/**/*.cshtml'
   ],
   theme: {
+    fontFamily: {
+        'sans': ['Outfit', 'sans-serif'],
+    },
     extend: {},
   },
   plugins: [],
