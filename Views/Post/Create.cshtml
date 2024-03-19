@@ -37,7 +37,54 @@
                 <input asp-for="Category" class="form-control"/>
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="">
+    <div class="">
+        <form enctype="multipart/form-data" asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="w-48">
+                <label asp-for="PostType" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                <div class="mt-2">
+                    <select asp-for="PostType" asp-items="Html.GetEnumSelectList<PostType>()" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></select>
+                </div>
+                <span asp-validation-for="PostType" class="text-danger"></span>
+                
+            </div>
+            <div class="w-48">
+                <label asp-for="Title" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                <div class="mt-2">
+                    <input asp-for="Title" class="block w-full rounded-md  p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"/>
+                </div>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="">
+                <label asp-for="Description" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                <div class="mt-2">
+                    <input asp-for="Description" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="">
+                <label asp-for="ImageUrl" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                <div class="mt-2">
+                    <input asp-for="ImageUrl" type="file" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                </div>
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="">
+                <label asp-for="Category" class="block text-sm font-medium leading-6 text-gray-900"></label>
+                <div class="mt-2">
+                    <input asp-for="Category" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                </div>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="">
                 <input type="submit" value="Create" class="btn btn-primary"/>
             </div>
         </form>
