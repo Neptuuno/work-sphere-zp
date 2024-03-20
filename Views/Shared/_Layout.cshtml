@@ -16,7 +16,7 @@
         <aside class="sticky top-0 hidden w-64 shrink-0 xl:block">
             <!-- Left column area -->
             <nav>
-                <ul class="border border-black w-3/4 py-2 pl-2 shadow-offset">
+                <ul class="border border-black rounded w-3/4 py-2 pl-2 shadow-offset">
                     @if (User.IsInRole("Admin"))
                     {
                         <li class="flex items-center gap-2">
@@ -67,7 +67,7 @@
             </nav>
         </aside>
 
-        <main class="flex-1 flex flex-col justify-center">
+        <main class="flex-1 flex flex-col items-center">
             @RenderBody()
         </main>
         <aside class="sticky top-0 flex justify-end w-64 shrink-0 lg:block">

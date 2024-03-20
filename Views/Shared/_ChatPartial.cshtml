@@ -18,7 +18,7 @@
         </svg>
         <h2 class="text-2xl">Chats</h2>
     </div>
-    <ul class="border border-black w-3/4 py-2 pl-2 shadow-offset">
+    <ul class="border rounded border-black w-3/4 py-2 pl-2 shadow-offset">
         @foreach (var chat in chats)
         {
             var otherUser = await ChatService.GetOtherUser(chat, currentUser);
