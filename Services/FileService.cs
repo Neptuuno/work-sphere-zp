@@ -53,6 +53,7 @@ public class FileService
     private bool IsImage(IFormFile file)
     {
         var allowedContentTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
+        Console.WriteLine(file.ContentType);
         return allowedContentTypes.Contains(file.ContentType);
     }
 
