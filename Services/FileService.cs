@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 
@@ -5,12 +7,14 @@ namespace SocialNetwork.Services;
 
 public class FileService
 {
-    private readonly string _targetFolder;
+    private readonly string _targetFolder; //absolute folder
     private readonly int _maxFileSize = 5 * 1024 * 1024; // 5MB
+    private readonly string _contentUrl; //url to content folder
 
-    public FileService(string targetFolder)
+    public FileService(IServer server, IWebHostEnvironment env)
     {
-        _targetFolder = targetFolder;
+        _targetFolder = Path.Combine(env.WebRootPath, "file-storage");
+        _contentUrl = server.Features.Get<IServerAddressesFeature>()?.Addresses.First() + "/file-storage";
     }
 
     public async Task<string> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
@@ -50,12 +54,15 @@ public class FileService
         return relativeFilePath;
     }
 
+    public string? GetImageFullUrl(string? url)
+    {
+        if (url == null)
+            return url;
+        return Path.Combine(_contentUrl, url);
+    }
+
     private bool IsImage(IFormFile file)
     {
-        // var allowedContentTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
-        // Console.WriteLine(file.ContentType);
-        // return allowedContentTypes.Contains(file.ContentType);
-        //
         try
         {
             Image.Identify(file.OpenReadStream());
@@ -63,7 +70,6 @@ public class FileService
         }
         catch (Exception)
         {
-            // If reading the file as an image fails, it's not a valid image
             return false;
         }
     }

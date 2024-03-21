@@ -1,54 +1,39 @@
+@using SocialNetwork.Services
 @model SocialNetwork.Models.PostModel
+@inject FileService FileService
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="border border-black shadow-offset w-7/12 p-6">
+    <h1 class="text-5xl mb-8">@Model.Title</h1>
+    <div class="flex justify-between">
+        <div class="w-64">
+            <label class="block text-xl leading-6 text-gray-900">@Html.DisplayNameFor(model => model.PostType)</label>
+            <p class="block w-full rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">@Html.DisplayFor(model => model.PostType)</p>
+        </div>
+        <div class="w-64">
+            <label class="block text-xl leading-6 text-gray-900">@Html.DisplayNameFor(model => model.Title)</label>
+            <p class="block w-full rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">@Html.DisplayFor(model => model.Title)</p>
+        </div>
+    </div>
+    <div class="flex justify-between">
+        <div class="w-64">
+            <label class="block text-xl leading-6 text-gray-900">@Html.DisplayNameFor(model => model.Category)</label>
+            <p class="block w-full rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">@Html.DisplayFor(model => model.Category)</p>
+        </div>
+        <div class="w-64">
+            <label class="block text-xl leading-6 text-gray-900">@Html.DisplayNameFor(model => model.ImageUrl)</label>
+            <img src="@FileService.GetImageFullUrl(Model.ImageUrl)" class="w-full h-auto rounded p-2 shadow-offset ring-1 ring-inset ring-black focus-visible:outline-none sm:text-sm sm:leading-6"/>
+        </div>
+    </div>
+    <div class="">
+        <label class="block text-xl leading-6 text-gray-900">@Html.DisplayNameFor(model => model.Description)</label>
+        <p class="block h-64 w-full rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">@Html.DisplayFor(model => model.Description)</p>
+    </div>
+</div>
 
 <div>
-    <h4>PostModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostedOn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostedOn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ApplicationUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApplicationUserId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
