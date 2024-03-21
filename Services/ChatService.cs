@@ -32,7 +32,7 @@ public class ChatService
         return chats;
     }
 
-    public async Task<ChatModel> GetChatById(ApplicationUser user, int id)
+    public async Task<ChatModel> GetChatById(int id)
     {
         var chat = await _context.Chats
             .Where(c => c.Id == id)

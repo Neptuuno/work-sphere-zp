@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SocialNetwork.Models;
 
 public class PostModel
@@ -7,8 +10,8 @@ public class PostModel
     public string Title { get; set; }
     public string Description { get; set; }
     // public int Likes { get; set; } = 0;
+    [DisplayName("Image")]
     public string? ImageUrl { get; set; }
-
     public DateTime PostedOn { get; set; }
      public DateTime? UpdatedOn { get; set; }
     public string Category { get; set; }

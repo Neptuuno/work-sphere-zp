@@ -74,7 +74,7 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var chat = await _chatService.GetChatById(user, id.Value);
+            var chat = await _chatService.GetChatById(id.Value);
             
             var chatViewModel = new ChatViewModel
             {

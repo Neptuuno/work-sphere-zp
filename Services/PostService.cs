@@ -30,9 +30,12 @@ public class PostService
         return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
     }
 
-    public async Task<PostModel> GetPostByIdAsync(int id)
+    public async Task<PostModel?> GetPostByIdAsync(int id)
     {
-        return await _context.Posts.FindAsync(id);
+        return await _context.Posts
+            .Where(p => p.Id == id)
+            .Include(p => p.ApplicationUser)
+            .FirstOrDefaultAsync();
     }
 
     public async Task CreatePostAsync(PostViewModel postViewModel, string userId, IFormFile? image)
