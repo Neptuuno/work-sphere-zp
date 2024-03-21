@@ -123,7 +123,7 @@ public class PostController : Controller
         if (ModelState.IsValid)
         {
             await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new {id});
         }
 
         return View(postViewModel);
