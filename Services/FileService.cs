@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
 
 namespace SocialNetwork.Services;
 
@@ -14,14 +15,13 @@ public class FileService
 
     public async Task<string> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
     {
-        if (!IsImage(file))
-        {
-            throw new Exception("Invalid file type. Only JPEG, PNG, and GIF images are allowed.");
-        }
-
         if (IsTooLarge(file))
         {
             throw new Exception("File size exceeded. The maximum allowed size is 5MB.");
+        }
+        if (!IsImage(file))
+        {
+            throw new Exception("Invalid file type. Only JPEG, PNG, and GIF images are allowed.");
         }
 
         string fileExtension = Path.GetExtension(file.FileName);
@@ -52,9 +52,20 @@ public class FileService
 
     private bool IsImage(IFormFile file)
     {
-        var allowedContentTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
-        Console.WriteLine(file.ContentType);
-        return allowedContentTypes.Contains(file.ContentType);
+        // var allowedContentTypes = new List<string> { "image/jpeg", "image/png", "image/gif" };
+        // Console.WriteLine(file.ContentType);
+        // return allowedContentTypes.Contains(file.ContentType);
+        //
+        try
+        {
+            Image.Identify(file.OpenReadStream());
+            return true;
+        }
+        catch (Exception)
+        {
+            // If reading the file as an image fails, it's not a valid image
+            return false;
+        }
     }
 
     private bool IsTooLarge(IFormFile file)
