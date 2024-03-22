@@ -18,7 +18,7 @@ public class AdminController : Controller
         _userManager = userManager;
         _roleManager = roleManager;
     }
-
+    
     // GET
     public IActionResult Index()
     {
@@ -31,6 +31,7 @@ public class AdminController : Controller
     // POST: RoleController/Create  
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult> CreateRole(string roleName)
     {
         try
@@ -51,15 +52,17 @@ public class AdminController : Controller
             return RedirectToAction("Index");
         }
     }
-
+//TODO change how admin works
     // POST: Admin/AssignRole
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> AssignRole(string userId, string roleName)
     {
         var user = await _userManager.FindByIdAsync(userId);
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (user != null && roleExists)
+        var userIsAdmin = user != null && await _userManager.IsInRoleAsync(user, "SuperAdmin");
+        if (user != null && !userIsAdmin && roleExists)
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
@@ -70,6 +73,7 @@ public class AdminController : Controller
     // POST: Admin/DeleteRole
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> DeleteRole(string roleName)
     {
         var role = await _roleManager.FindByNameAsync(roleName);

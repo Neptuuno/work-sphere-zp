@@ -35,8 +35,6 @@ public class FileService
 
         string fileExtension = GetImageFormat(file);
         string uniqueFileName = existingName ?? $"{Guid.NewGuid()}{fileExtension}";
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(uniqueFileName);
         string filePath = Path.Combine(_targetFolder, dirName, userId, uniqueFileName);
         string directoryPath = Path.Combine(_targetFolder, dirName, userId);
         if (!Directory.Exists(directoryPath))

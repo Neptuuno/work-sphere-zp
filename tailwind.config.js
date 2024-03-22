@@ -12,6 +12,7 @@ module.exports = {
     extend: {
       colors: {
         'primary': '#62D745',
+        'primary-dark': '#59c240',
       },
       boxShadow: {
         'offset': '4px 4px 0px 0px #000000',
