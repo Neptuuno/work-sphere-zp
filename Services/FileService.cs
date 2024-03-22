@@ -28,8 +28,15 @@ public class FileService
             throw new Exception("Invalid file type. Only JPEG, PNG, and GIF images are allowed.");
         }
 
-        string fileExtension = Path.GetExtension(file.FileName);
+        if (existingName != null && !File.Exists(Path.Combine(_targetFolder, dirName, userId, existingName)))
+        {
+            existingName = null;
+        }
+
+        string fileExtension = GetImageFormat(file);
         string uniqueFileName = existingName ?? $"{Guid.NewGuid()}{fileExtension}";
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(uniqueFileName);
         string filePath = Path.Combine(_targetFolder, dirName, userId, uniqueFileName);
         string directoryPath = Path.Combine(_targetFolder, dirName, userId);
         if (!Directory.Exists(directoryPath))
@@ -72,6 +79,12 @@ public class FileService
         {
             return false;
         }
+    }
+
+    private string GetImageFormat(IFormFile file)
+    {
+        var format = Image.DetectFormat(file.OpenReadStream());
+        return $".{format.Name.ToLower()}";
     }
 
     private bool IsTooLarge(IFormFile file)

@@ -10,9 +10,10 @@
 <div>
     <h4>Chat Details</h4>
     <hr/>
-    @if (Model.UserOther != null)
+    
+    @if (Model.UserSelf != null)
     {
-        <h4>You: @Model.UserOther.UserName</h4>
+        <h4>You: @Model.UserSelf.UserName</h4>
     }
     else
     {
@@ -22,10 +23,11 @@
             document.getElementById("sendButton").disabled = true;
         </script>
     }
-    @if (Model.UserSelf != null)
-    {
-        <h4>Other: @Model.UserSelf.UserName</h4>
-    }
+    @if (Model.UserOther != null)
+        {
+            <h4>Other: @Model.UserOther.UserName</h4>
+        }
+   
 </div>
 
 <div>

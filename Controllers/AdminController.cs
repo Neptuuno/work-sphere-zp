@@ -27,7 +27,6 @@ public class AdminController : Controller
         return View(users);
     }
 
-
     // POST: Admin/CreateRole
     // POST: RoleController/Create  
     [HttpPost]
@@ -63,6 +62,24 @@ public class AdminController : Controller
         if (user != null && roleExists)
         {
             await _userManager.AddToRoleAsync(user, roleName);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    // POST: Admin/DeleteRole
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteRole(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role != null)
+        {
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            if (!(usersInRole.Count > 0))
+            {
+                await _roleManager.DeleteAsync(role);
+            }
         }
 
         return RedirectToAction(nameof(Index));
