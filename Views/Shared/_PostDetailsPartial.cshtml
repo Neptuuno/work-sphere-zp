@@ -2,7 +2,7 @@
 @model SocialNetwork.Models.PostModel
 @inject FileService FileService
 
-<div class="border border-black shadow-offset w-7/12 p-6">
+<div class="border border-black shadow-offset p-6 w-6/12">
     <div class="flex justify-between">
         <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.ApplicationUser.Id">
             <div class="flex gap-2 items-center">
@@ -17,11 +17,11 @@
     <a asp-controller="Post" asp-action="Details" asp-route-id="@Model.Id">
         <div class="flex justify-between items-center">
             <h1 class="text-4xl my-8">@Model.Title</h1>
-            <div class="bg-blue-500 text-white rounded p-2 text-gray-900 shadow-offset border-black border sm:text-sm sm:leading-6">
+            <div class="bg-blue-500 text-white rounded p-2 shadow-offset border-black border sm:text-sm sm:leading-6">
                 <h4 class="text-3xl">@Model.Category</h4>
             </div>
         </div>
-    <div class="block h-64 w-full rounded p-2 text-gray-900 shadow-offset border border-black sm:text-sm sm:leading-6">
+    <div class="block h-64 rounded p-2 text-gray-900 shadow-offset border border-black sm:text-sm sm:leading-6">
         <p class="text-lg">@Model.Description</p>
     </div>
     
