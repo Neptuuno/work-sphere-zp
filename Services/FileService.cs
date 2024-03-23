@@ -23,6 +23,7 @@ public class FileService
         {
             throw new Exception("File size exceeded. The maximum allowed size is 5MB.");
         }
+
         if (!IsImage(file))
         {
             throw new Exception("Invalid file type. Only JPEG, PNG, and GIF images are allowed.");
@@ -57,6 +58,17 @@ public class FileService
 
         string relativeFilePath = Path.GetRelativePath(_targetFolder, filePath);
         return relativeFilePath;
+    }
+
+    public void DeleteImage(string? url)
+    {
+        if (url == null)
+            return;
+        string filePath = Path.Combine(_targetFolder, url);
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
     }
 
     public string? GetImageFullUrl(string? url)

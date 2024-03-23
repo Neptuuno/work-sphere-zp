@@ -129,23 +129,6 @@ public class PostController : Controller
         return View(postViewModel);
     }
 
-    // GET: Post/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null || _context.Posts == null)
-        {
-            return NotFound();
-        }
-
-        var postModel = await _postService.GetPostByIdAsync(id.Value);
-        if (postModel == null)
-        {
-            return NotFound();
-        }
-
-        return View(postModel);
-    }
-
     // POST: Post/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -157,7 +140,7 @@ public class PostController : Controller
             return BadRequest("User not logged in");
         }
         var postModel = await _postService.GetPostByIdAsync(id);
-        if (!_postService.IsAuthorized(user,postModel) && !User.IsInRole("Admin")&& !User.IsInRole("SuperAdmin"))
+        if (!_postService.IsAuthorized(user,postModel))
         {
             return BadRequest("Unauthorized");
         }

@@ -78,6 +78,8 @@ public class PostService
         var postModel = await GetPostByIdAsync(id);
         if (postModel != null)
         {
+            var imageUrl = postModel.ImageUrl;
+            _fileService.DeleteImage(imageUrl);
             _context.Posts.Remove(postModel);
             await _context.SaveChangesAsync();
         }
@@ -85,7 +87,7 @@ public class PostService
 
     public bool IsAuthorized(ApplicationUser user, PostModel post)
     {
-        return post.ApplicationUserId == user.Id;
+        return post.ApplicationUserId == user.Id || _userManager.IsInRoleAsync(user, "SuperAdmin").Result || _userManager.IsInRoleAsync(user, "Admin").Result;
     }
 
     public PostModel CreatePostModelByViewModel(PostViewModel postViewModel, string userId)

@@ -1,0 +1,59 @@
+@using SocialNetwork.Services
+@model SocialNetwork.Models.PostModel
+@inject FileService FileService
+
+<div class="border border-black shadow-offset w-7/12 p-6">
+    <div class="flex justify-between">
+            <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.ApplicationUser.Id">
+                <div class="flex gap-2 items-center">
+                    <img class="w-12 h-12 rounded-full" src="@FileService.GetImageFullUrl(Model.ApplicationUser.ImageUrl)" alt="profile image"/>
+                    <h3 class="text-lg">@Model.ApplicationUser.UserName</h3>
+                </div>
+            </a>
+            <div class="bg-primary rounded p-2 text-gray-900 shadow-offset border-black border sm:text-sm sm:leading-6">
+                <h4 class="text-3xl">@Model.PostType</h4>
+            </div>
+        </div>
+        <div class="flex justify-between items-center">
+            <h1 class="text-4xl my-8">@Model.Title</h1>
+            <div class="bg-blue-500 text-white rounded p-2 text-gray-900 shadow-offset border-black border sm:text-sm sm:leading-6">
+                <h4 class="text-3xl">@Model.Category</h4>
+            </div>
+        </div>
+        <div class="block h-64 w-full rounded p-2 text-gray-900 shadow-offset border border-black sm:text-sm sm:leading-6">
+            <p class="text-lg">@Model.Description</p>
+        </div>
+        @if (FileService.GetImageFullUrl(Model.ImageUrl) != null)
+        {
+            <div class="mt-8">
+                <img src="@FileService.GetImageFullUrl(Model.ImageUrl)" class="w-full h-auto rounded p-2 shadow-offset ring-1 ring-inset ring-black focus-visible:outline-none sm:text-sm sm:leading-6" alt="post image"/>
+            </div>
+        }
+    <div class="flex mt-8 justify-between">
+        <div class="flex gap-2">
+            @if(Model.UpdatedOn != null)
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+    
+                <h4> @Model.UpdatedOn?.ToShortDateString() - @Model.UpdatedOn?.ToShortTimeString()</h4>
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <h4> @Model.PostedOn.ToShortDateString() - @Model.PostedOn.ToShortTimeString()</h4>
+            }
+        </div>
+        <div class="flex gap-2">
+                <form asp-controller="Post" asp-action="Delete" class="inline-block">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Delete" class="btn-red" />
+                </form>
+                <a class="btn-primary bg-yellow-500 hover:bg-yellow-600" asp-controller="Post" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            </div>
+    </div>
+    
+</div>
