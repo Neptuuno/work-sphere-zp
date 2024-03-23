@@ -17,7 +17,7 @@
             <!-- Left column area -->
             <nav>
                 <ul class="border border-black rounded w-3/4 py-2 pl-2 shadow-offset">
-                    @if (User.IsInRole("Admin"))
+                    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                     {
                         <li class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

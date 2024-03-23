@@ -10,14 +10,14 @@
         <div class="flex flex-col gap-4">
             <form asp-controller="Admin" asp-action="CreateRole" method="post">
                 <div class="flex gap-2">
-                    <input type="text" name="roleName" placeholder="Role name" required class="input-primary"/>
-                    <input type="submit" value="Create Role" class="w-56 btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
+                    <input type="text" name="roleName" placeholder="Role name" required class="w-56 input-primary"/>
+                    <input type="submit" value="Create Role" class="btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
                 </div>
             </form>
             <form asp-controller="Admin" asp-action="DeleteRole" method="post">
                 <div class="flex gap-2">
                     <div class="relative">
-                        <select name="roleName" required class="w-64 appearance-none bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
+                        <select name="roleName" required class="w-56 appearance-none bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
                             @foreach (var role in ViewBag.Roles)
                             {
                                 <option value="@role.Name">@role.Name</option>
@@ -77,6 +77,7 @@
                                 <input type="hidden" name="userId" value="@user.Id"/>
                                 <div class="relative">
                                     <select name="roleName" required class="appearance-none block w-full bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
+                                                <option value="none" selected>No roles assigned</option>
                                         @foreach (var role in ViewBag.Roles)
                                         {
                                             if (await UserManager.IsInRoleAsync(user, role.Name))

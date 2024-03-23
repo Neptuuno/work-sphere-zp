@@ -7,7 +7,7 @@ using SocialNetwork.Models;
 
 namespace SocialNetwork.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "SuperAdmin,Admin")]
 public class AdminController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -18,12 +18,13 @@ public class AdminController : Controller
         _userManager = userManager;
         _roleManager = roleManager;
     }
-    
+
     // GET
     public IActionResult Index()
     {
         List<ApplicationUser> users = _userManager.Users.Include(u => u.Posts).ToList();
-        ViewBag.Roles = _roleManager.Roles.ToList();
+        var roles = _roleManager.Roles.ToList();
+        ViewBag.Roles = roles;
         return View(users);
     }
 
@@ -59,16 +60,23 @@ public class AdminController : Controller
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> AssignRole(string userId, string roleName)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (user != null && roleExists)
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (await _userManager.IsInRoleAsync(currentUser, "SuperAdmin"))
         {
-            await _userManager.AddToRoleAsync(user, roleName);
+            var user = await _userManager.FindByIdAsync(userId);
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            var isCurrentUser = currentUser == user;
+            if (user != null && roleExists && roleName != "SuperAdmin" && !isCurrentUser)
+            {
+                var oldRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, oldRoles);
+                await _userManager.AddToRoleAsync(user, roleName);
+            }
         }
 
         return RedirectToAction(nameof(Index));
     }
-    
+
     // POST: Admin/DeleteRole
     [HttpPost]
     [ValidateAntiForgeryToken]
