@@ -2,34 +2,36 @@
 @model IEnumerable<ApplicationUser>
 @inject UserManager<ApplicationUser> UserManager
 @{
-    ViewData["Title"] = "User Page";
+    ViewData["Title"] = "Admin Panel";
 }
 
 <div>
-    <div class="flex flex-col gap-4">
-        <form asp-controller="Admin" asp-action="CreateRole" method="post">
-            <div class="flex gap-2">
-                <input type="text" name="roleName" placeholder="Role name" required class="input-primary"/>
-                <input type="submit" value="Create Role" class="btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
-            </div>
-        </form>
-        <form asp-controller="Admin" asp-action="DeleteRole" method="post">
-            <div class="flex gap-2">
-                <div class="relative">
-                    <select name="roleName" required class="appearance-none bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
-                        @foreach (var role in ViewBag.Roles)
-                        {
-                            <option value="@role.Name">@role.Name</option>
-                        }
-                    </select>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-2 w-6 h-6 absolute right-0 top-1/2 transform -translate-y-1/2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-                    </svg>
+    @if(User.IsInRole("SuperAdmin")){
+        <div class="flex flex-col gap-4">
+            <form asp-controller="Admin" asp-action="CreateRole" method="post">
+                <div class="flex gap-2">
+                    <input type="text" name="roleName" placeholder="Role name" required class="input-primary"/>
+                    <input type="submit" value="Create Role" class="w-56 btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"/>
                 </div>
-                <input type="submit" value="Delete Role" class="btn-primary bg-red-500 hover:bg-red-700"/>
-            </div>
-        </form>
-    </div>
+            </form>
+            <form asp-controller="Admin" asp-action="DeleteRole" method="post">
+                <div class="flex gap-2">
+                    <div class="relative">
+                        <select name="roleName" required class="w-64 appearance-none bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
+                            @foreach (var role in ViewBag.Roles)
+                            {
+                                <option value="@role.Name">@role.Name</option>
+                            }
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-2 w-6 h-6 absolute right-0 top-1/2 transform -translate-y-1/2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                        </svg>
+                    </div>
+                    <input type="submit" value="Delete Role" class="btn-primary bg-red-500 hover:bg-red-700"/>
+                </div>
+            </form>
+        </div>
+        }
 
     <table class="table-auto w-full mt-8">
         <thead>
@@ -38,7 +40,9 @@
             <th class="px-4 py-2">@Html.DisplayNameFor(model => model.Email)</th>
             <th class="px-4 py-2">@Html.DisplayNameFor(model => model.Age)</th>
             <th class="px-4 py-2">@Html.DisplayNameFor(model => model.Posts)</th>
+            @if(User.IsInRole("SuperAdmin")){
             <th class="px-4 py-2">Assign Role</th>
+            }
             <th class="px-4 py-2">Delete User</th>
         </tr>
         </thead>
@@ -66,32 +70,34 @@
                         <text>No posts</text>
                     }
                 </td>
-                <td class="border px-4 py-2">
-                    <form asp-controller="Admin" asp-action="AssignRole" method="post">
-                        <div class="flex flex-col gap-2">
-                            <input type="hidden" name="userId" value="@user.Id"/>
-                            <div class="relative">
-                                <select name="roleName" required class="appearance-none block w-full bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
-                                    @foreach (var role in ViewBag.Roles)
-                                    {
-                                        if (await UserManager.IsInRoleAsync(user, role.Name))
+                @if(User.IsInRole("SuperAdmin")){
+                    <td class="border px-4 py-2">
+                        <form asp-controller="Admin" asp-action="AssignRole" method="post">
+                            <div class="flex flex-col gap-2">
+                                <input type="hidden" name="userId" value="@user.Id"/>
+                                <div class="relative">
+                                    <select name="roleName" required class="appearance-none block w-full bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6">
+                                        @foreach (var role in ViewBag.Roles)
                                         {
-                                            <option value="@role.Name" selected>@role.Name</option>
+                                            if (await UserManager.IsInRoleAsync(user, role.Name))
+                                            {
+                                                <option value="@role.Name" selected>@role.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@role.Name">@role.Name</option>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <option value="@role.Name">@role.Name</option>
-                                        }
-                                    }
-                                </select>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-2 w-6 h-6 absolute right-0 top-1/2 transform -translate-y-1/2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-                                </svg>
+                                    </select>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-2 w-6 h-6 absolute right-0 top-1/2 transform -translate-y-1/2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                                    </svg>
+                                </div>
+                                <input type="submit" value="Assign Role" class="btn-primary "/>
                             </div>
-                            <input type="submit" value="Assign Role" class="btn-primary "/>
-                        </div>
-                    </form>
-                </td>
+                        </form>
+                    </td>
+                    }
                 <td class="border px-4 py-2">
                     <form asp-controller="Admin" asp-action="DeleteUser" method="post">
                         <input type="hidden" name="userId" value="@user.Id"/>

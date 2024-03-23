@@ -157,7 +157,7 @@ public class PostController : Controller
             return BadRequest("User not logged in");
         }
         var postModel = await _postService.GetPostByIdAsync(id);
-        if (!_postService.IsAuthorized(user,postModel) && !User.IsInRole("Admin"))
+        if (!_postService.IsAuthorized(user,postModel) && !User.IsInRole("Admin")&& !User.IsInRole("SuperAdmin"))
         {
             return BadRequest("Unauthorized");
         }

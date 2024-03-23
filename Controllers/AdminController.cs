@@ -28,7 +28,7 @@ public class AdminController : Controller
     }
 
     // POST: Admin/CreateRole
-    // POST: RoleController/Create  
+    // POST: RoleController/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "SuperAdmin")]
@@ -52,7 +52,7 @@ public class AdminController : Controller
             return RedirectToAction("Index");
         }
     }
-//TODO change how admin works
+
     // POST: Admin/AssignRole
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -61,8 +61,7 @@ public class AdminController : Controller
     {
         var user = await _userManager.FindByIdAsync(userId);
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        var userIsAdmin = user != null && await _userManager.IsInRoleAsync(user, "SuperAdmin");
-        if (user != null && !userIsAdmin && roleExists)
+        if (user != null && roleExists)
         {
             await _userManager.AddToRoleAsync(user, roleName);
         }
