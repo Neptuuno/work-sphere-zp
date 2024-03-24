@@ -37,9 +37,23 @@ else
     {
         var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
         <div class="@messageClass">
-            <span class="message-user">@message.Sender.UserName</span>
-            <span class="message-timestamp">@message.Timestamp</span>
-            <span class="message-content">@message.Content</span>
+            <div class="flex gap-2">
+                                @if (message.Sender.ImageUrl != null)
+                                {
+                                    <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
+                                }
+                                else
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                    </svg>
+                                }
+                            </div>
+            <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex gap-2 items-center">
+
+                <span class="message-timestamp">@message.Timestamp</span>
+                <span class="message-content">@message.Content</span>
+            </div>
         </div>
     }
 </div>
@@ -92,6 +106,7 @@ connection.on("ReceiveMessage", function (message) {
     } else {
         messageDiv.classList.add("other-message");
     }
+    console.log(message)
 
     document.getElementById("messagesList").appendChild(messageDiv);
 });
