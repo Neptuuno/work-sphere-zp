@@ -25,9 +25,19 @@ public class UserService
         return _userManager.Users.Include(u => u.Posts).ToList();
     }
 
-    public ApplicationUser? GetUserDetails(string id)
+    public async Task<ApplicationUser?> GetUserDetails(string id)
     {
-        return _userManager.FindByIdAsync(id).Result;
+        return await _userManager.FindByIdAsync(id);
+    }
+    public async Task<ApplicationUser?> GetSafeUserDetails(string id)
+    {
+        var userDetail = await _userManager.FindByIdAsync(id);
+        if (userDetail == null) throw new Exception("User not found");
+        return new ApplicationUser
+        {
+            Id = userDetail.Id,
+            UserName = userDetail.UserName,
+        };
     }
 
     public async Task UpdateUser(ApplicationUser user ,Settings.InputModel newUserModel, IFormFile? image)

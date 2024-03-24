@@ -26,14 +26,14 @@ public class UserController : Controller
         return View(_userService.GetAllUsers());
     }
 
-    public IActionResult Detail(string? id)
+    public async Task<IActionResult> Detail(string? id)
     {
         if (id == null)
         {
             return BadRequest("User ID cannot be null.");
         }
 
-        ApplicationUser? user = _userService.GetUserDetails(id);
+        ApplicationUser? user = await _userService.GetUserDetails(id);
         if (user == null)
         {
             return NotFound("User not found.");

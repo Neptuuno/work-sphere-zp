@@ -1,46 +1,60 @@
+@using SocialNetwork.Services
 @model SocialNetwork.Models.ViewModels.ChatViewModel
+@inject FileService FileService
 
 @{
     ViewData["Title"] = "Chat with " + Model.UserOther?.UserName;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
-    @if (Model.UserOther == null)
-    {
-        <h4>You are alone in the chat</h4>
-        <script>
-            document.getElementById("messageInput").disabled = true;
-            document.getElementById("sendButton").disabled = true;
-        </script>
-    }
-    else
-    {
-        <h4>Other: @Model.UserOther.UserName</h4>
-    }
-</div>
-<div>
-    <ul id="messagesList">
-        @foreach (var message in Model.Messages)
+@if (Model.UserOther == null)
+{
+    <h4>You are alone in the chat</h4>
+    <script>
+        document.getElementById("messageInput").disabled = true;
+        document.getElementById("sendButton").disabled = true;
+    </script>
+}
+else
+{
+    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex gap-2 items-center w-1/2 mb-8">
+        @if (Model.UserOther.ImageUrl != null)
         {
-            var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
-            <li class="@messageClass">@message.Content</li>
+            <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
         }
-    </ul>
+        else
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            </svg>
+        }
+        <h4 class="text-xl">@Model.UserOther.UserName</h4>
+    </div>
+}
+
+<div id="messagesList" class=" w-1/2">
+    @foreach (var message in Model.Messages)
+    {
+        var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
+        <div class="@messageClass">
+            <span class="message-user">@message.Sender.UserName</span>
+            <span class="message-timestamp">@message.Timestamp</span>
+            <span class="message-content">@message.Content</span>
+        </div>
+    }
 </div>
 
-<div class="rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
+<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
     <div class="flex gap-2 w-full items-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary">
-          <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
         </svg>
         <input type="text" class="bg-primary rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa"/>
     </div>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary cursor-pointer" id="sendButton">
-        <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+        <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
     </svg>
 </div>
-
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
@@ -56,9 +70,30 @@ connection.start().catch(function (err) {
 });
 
 connection.on("ReceiveMessage", function (message) {
-    let li = document.createElement("li");
-    li.textContent = message.content;
-    document.getElementById("messagesList").appendChild(li);
+    let messageDiv = document.createElement("div");
+
+    let userSpan = document.createElement("span");
+    userSpan.textContent = message.sender.userName;
+    userSpan.classList.add("message-user");
+    messageDiv.appendChild(userSpan);
+
+    let timestampSpan = document.createElement("span");
+    timestampSpan.textContent = message.timestamp;
+    timestampSpan.classList.add("message-timestamp");
+    messageDiv.appendChild(timestampSpan);
+
+    let contentSpan = document.createElement("span");
+    contentSpan.textContent = message.content;
+    contentSpan.classList.add("message-content");
+    messageDiv.appendChild(contentSpan);
+
+    if (message.senderId === senderId) {
+        messageDiv.classList.add("self-message");
+    } else {
+        messageDiv.classList.add("other-message");
+    }
+
+    document.getElementById("messagesList").appendChild(messageDiv);
 });
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
@@ -71,12 +106,19 @@ document.getElementById("sendButton").addEventListener("click", function (event)
 </script>
 
 <style>
-    .self-message{
+.self-message {
     color: green;
-    }
-    
-    .other-message{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.other-message {
     color: red;
-    }
-    
+    display: flex;
+    justify-content: flex-start;
+}
+.message {
+    display: flex;
+    flex-direction: column;
+}
 </style>

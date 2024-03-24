@@ -10,11 +10,13 @@ namespace SocialNetwork.Hubs;
 public class ChatHub : Hub
 {
     private readonly ChatService _chatService;
+    private readonly UserService _userService;
     private static readonly Dictionary<string, string> UserConnectionMap = new Dictionary<string, string>();
 
-    public ChatHub(ChatService chatService)
+    public ChatHub(ChatService chatService, UserService userService)
     {
         _chatService = chatService;
+        _userService = userService;
     }
 
     public override async Task OnConnectedAsync()
@@ -48,8 +50,9 @@ public class ChatHub : Hub
         var newMessage = await _chatService.CreateMessage(chatId, senderId, message);
 
         var senderConnectionId = UserConnectionMap[senderId];
+        var senderUser = await _userService.GetSafeUserDetails(senderId);
+        newMessage.Sender = senderUser;
 
-        //TODO Send complex message instead of message content
         await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessage);
 
         if (UserConnectionMap.TryGetValue(receiverId, out var receiverConnectionId))
