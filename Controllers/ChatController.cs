@@ -75,6 +75,11 @@ namespace SocialNetwork.Controllers
             }
 
             var chat = await _chatService.GetChatById(id.Value);
+
+            if (chat.ChatUsers.All(cu => cu.UserId != user.Id))
+            {
+                return NotFound();
+            }
             
             var chatViewModel = new ChatViewModel
             {

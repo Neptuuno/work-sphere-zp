@@ -50,11 +50,11 @@ public class ChatHub : Hub
         var senderConnectionId = UserConnectionMap[senderId];
 
         //TODO Send complex message instead of message content
-        await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessage.Content);
+        await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessage);
 
         if (UserConnectionMap.TryGetValue(receiverId, out var receiverConnectionId))
         {
-            await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessage.Content);
+            await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessage);
         }
     }
 }
