@@ -1,6 +1,9 @@
 @using SocialNetwork.Services
+@using Microsoft.AspNetCore.Identity
 @model SocialNetwork.Models.PostModel
 @inject FileService FileService
+@inject PostService PostService
+@inject UserManager<ApplicationUser> UserManager
 
 <div class="border border-black shadow-offset p-6 w-6/12">
     <div class="flex justify-between">
@@ -32,7 +35,7 @@
             </div>
         }
         </a>
-    <div class="flex mt-8 justify-between">
+    <div class="flex mt-8 justify-between items-center">
         <div class="flex gap-2">
             @if(Model.UpdatedOn != null)
             {
@@ -45,18 +48,20 @@
             else
             {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                 </svg>
                 <h4> @Model.PostedOn.ToShortDateString() - @Model.PostedOn.ToShortTimeString()</h4>
             }
         </div>
-        <div class="flex gap-2">
+        @if(PostService.IsAuthorized(await UserManager.GetUserAsync(User), Model)){
+            <div class="flex gap-2">
                 <form asp-controller="Post" asp-action="Delete" class="inline-block">
                     <input type="hidden" asp-for="Id" />
                     <input type="submit" value="Delete" class="btn-red" />
                 </form>
                 <a class="btn-primary bg-yellow-500 hover:bg-yellow-600" asp-controller="Post" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
             </div>
+        }
     </div>
     
 </div>

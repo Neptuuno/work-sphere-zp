@@ -15,6 +15,7 @@
         document.getElementById("sendButton").disabled = true;
     </script>
 }
+
 else
 {
     <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex gap-2 items-center w-1/2 mb-8">
@@ -32,27 +33,29 @@ else
     </div>
 }
 
-<div id="messagesList" class=" w-1/2">
+<div id="messagesList" class="flex flex-col gap-6 w-1/2">
     @foreach (var message in Model.Messages)
     {
         var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
         <div class="@messageClass">
-            <div class="flex gap-2">
-                                @if (message.Sender.ImageUrl != null)
-                                {
-                                    <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
-                                }
-                                else
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                    </svg>
-                                }
-                            </div>
-            <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex gap-2 items-center">
-
-                <span class="message-timestamp">@message.Timestamp</span>
-                <span class="message-content">@message.Content</span>
+            <div class="message-box">
+                @if (message.Sender != Model.UserSelf)
+                {
+                    @if (message.Sender.ImageUrl != null)
+                    {
+                        <img class="message-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
+                    }
+                    else
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                    }
+                }
+                <div class="message-main">
+                    <p class="message-content">@message.Content</p>
+                    <span class="message-timestamp" x-on>@message.Timestamp</span>
+                </div>
             </div>
         </div>
     }
@@ -118,6 +121,25 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     });
     event.preventDefault();
 });
+
+function formatDateTime(date) {
+    let currentDate = new Date();
+    let inputDate = new Date(date);
+
+    if (currentDate.getFullYear() === inputDate.getFullYear()) {
+        if (currentDate.getDate() === inputDate.getDate() && currentDate.getMonth() === inputDate.getMonth()) {
+            return inputDate.getHours().toString().padStart(2, '0') + ':' + inputDate.getMinutes().toString().padStart(2, '0');
+        }
+        else {
+            return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0');
+        }
+    }
+    
+    else {
+        return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + inputDate.getFullYear();
+    }
+}
+    
 </script>
 
 <style>
@@ -132,8 +154,45 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     display: flex;
     justify-content: flex-start;
 }
-.message {
+
+.message-main{
+                    flex-direction: column;
+                    border-radius: 0.25rem;
+                    padding: 0.5rem;
+                    --tw-text-opacity: 1;
+                    color: rgb(17 24 39 / var(--tw-text-opacity));
+                    --tw-shadow: 4px 4px 0px 0px #000000;
+                                            --tw-shadow-colored: 4px 4px 0px 0px var(--tw-shadow-color);
+                                        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+                                        max-width: 16rem;
+                                            border-width: 1px;
+                                        --tw-border-opacity: 1;
+                                        border-color: rgb(0 0 0 / var(--tw-border-opacity));
+                                        display: flex;
+                                        gap: 0.5rem;
+                   
+                    }
+
+.message-content{
+overflow: auto;
+overflow-wrap: break-word;
+}
+
+.message-box{
     display: flex;
-    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.message-img
+                    {
+                        border-radius: 9999px;
+                        height: 2.5rem;
+                        width: 2.5rem;
+                    }
+
+.message-timestamp{
+    font-size: 0.75rem;
+    line-height: 1rem;
 }
 </style>
