@@ -40,26 +40,10 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var chats = await _chatService.GetChatsForUser(user);
-            var chatViewModels = new List<ChatViewModel>();
-            foreach (var chat in chats)
-            {
-                if (chat == null)
-                {
-                    break;
-                }
-                var chatViewModel = new ChatViewModel
-                {
-                    Id = chat.Id,
-                    UserSelf = user,
-                    UserOther = await _chatService.GetOtherUser(chat, user),
-                    Messages = new List<MessageModel>(),
-                };
-                chatViewModels.Add(chatViewModel);
-            }
-            
-            ViewBag.LastChat = _userService.GetLastOpenedChatForUser(user);
-            return View(chatViewModels);
+            var lastChatId = _userService.GetLastOpenedChatIdForUser(user);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(lastChatId);
+            return RedirectToAction(nameof(Details), new { id = lastChatId});
         }
 
         // GET: Chats/Details/5
@@ -71,18 +55,13 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var chat = await _chatService.GetChatById(id.Value);
-
-            if (chat.ChatUsers.All(cu => cu.UserId != user.Id))
-            {
-                return NotFound();
-            }
+            var chat = id.HasValue ? await _chatService.GetChatById(id.Value) : _chatService.GetChatsForUser(user).Result.FirstOrDefault();
             
+            if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
+            {
+                return View("Index");
+            }
+
             var chatViewModel = new ChatViewModel
             {
                 Id = chat.Id,
@@ -91,6 +70,7 @@ namespace SocialNetwork.Controllers
                 Messages = await _chatService.GetMessagesForChat(chat),
             };
             
+            _userService.SetLastOpenedChatIdForUser(user, chat.Id);
             return View(chatViewModel);
         }
 

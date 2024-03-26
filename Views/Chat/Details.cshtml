@@ -18,18 +18,23 @@
 
 else
 {
-    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex gap-2 items-center w-1/2 mb-8">
-        @if (Model.UserOther.ImageUrl != null)
-        {
-            <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
-        }
-        else
-        {
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-            </svg>
-        }
-        <h4 class="text-xl">@Model.UserOther.UserName</h4>
+    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between  w-1/2 mb-8">
+        <div class="flex gap-2 items-center">
+            @if (Model.UserOther.ImageUrl != null)
+            {
+                <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                </svg>
+            }
+            <h4 class="text-xl">@Model.UserOther.UserName</h4>
+        </div>
+        <div>
+            <partial name="components/_Color-picker"/>
+        </div>
     </div>
 }
 
@@ -120,6 +125,7 @@ connection.on("ReceiveMessage", function (message) {
 
     let messageMainDiv = document.createElement("div");
     messageMainDiv.classList.add("message-main");
+    messageMainDiv.classList.add("bg-primary");
 
     let contentSpan = document.createElement("p");
     contentSpan.textContent = message.content;
@@ -142,6 +148,7 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
         return console.error(err.toString());
     });
+    document.getElementById("messageInput").value = "";
     event.preventDefault();
 });
 
@@ -179,22 +186,22 @@ function formatDateTime(date) {
 }
 
 .message-main{
-                    flex-direction: column;
-                    border-radius: 0.25rem;
-                    padding: 0.5rem;
-                    --tw-text-opacity: 1;
-                    color: rgb(17 24 39 / var(--tw-text-opacity));
-                    --tw-shadow: 4px 4px 0px 0px #000000;
-                                            --tw-shadow-colored: 4px 4px 0px 0px var(--tw-shadow-color);
-                                        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-                                        max-width: 16rem;
-                                            border-width: 1px;
-                                        --tw-border-opacity: 1;
-                                        border-color: rgb(0 0 0 / var(--tw-border-opacity));
-                                        display: flex;
-                                        gap: 0.5rem;
-                   
-                    }
+flex-direction: column;
+border-radius: 0.25rem;
+padding: 0.5rem;
+--tw-text-opacity: 1;
+color: rgb(17 24 39 / var(--tw-text-opacity));
+--tw-shadow: 4px 4px 0px 0px #000000;
+--tw-shadow-colored: 4px 4px 0px 0px var(--tw-shadow-color);
+box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+max-width: 16rem;
+border-width: 1px;
+--tw-border-opacity: 1;
+border-color: rgb(0 0 0 / var(--tw-border-opacity));
+display: flex;
+gap: 0.5rem;
+
+}
 
 .message-content{
 overflow: auto;
@@ -202,20 +209,20 @@ overflow-wrap: break-word;
 }
 
 .message-box{
-    display: flex;
-    gap: 0.5rem;
-    align-items: flex-end;
+display: flex;
+gap: 0.5rem;
+align-items: flex-end;
 }
 
 .message-img
-                    {
-                        border-radius: 9999px;
-                        height: 2.5rem;
-                        width: 2.5rem;
-                    }
+{
+border-radius: 9999px;
+height: 2.5rem;
+width: 2.5rem;
+}
 
 .message-timestamp{
-    font-size: 0.75rem;
-    line-height: 1rem;
+font-size: 0.75rem;
+line-height: 1rem;
 }
 </style>

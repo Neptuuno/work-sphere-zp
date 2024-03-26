@@ -43,15 +43,14 @@ public class UserService
         };
     }
 
-    public async Task<ChatModel?> GetLastOpenedChatForUser(ApplicationUser user)
+    public int? GetLastOpenedChatIdForUser(ApplicationUser user)
     {
-        var lastChatId = user.LastOpenedChatId;
-        if (lastChatId == null)
-        {
-            return null;
-        }
-
-        return await _chatService.GetChatById(lastChatId.Value);
+        return user.LastOpenedChatId;
+    }
+    public void SetLastOpenedChatIdForUser(ApplicationUser user, int chatId)
+    {
+        user.LastOpenedChatId = chatId;
+        _userManager.UpdateAsync(user);
     }
 
     public async Task UpdateUser(ApplicationUser user ,Settings.InputModel newUserModel, IFormFile? image)

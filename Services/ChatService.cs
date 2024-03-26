@@ -32,6 +32,18 @@ public class ChatService
         return chats;
     }
 
+    public async Task SaveColor(ChatModel chat, string color)
+    {
+        chat.Color = color;
+        await _context.SaveChangesAsync();
+    }
+
+   public async Task GetColor()
+    {
+        
+        
+    }
+
     public async Task<ChatModel> GetChatById(int id)
     {
         var chat = await _context.Chats
