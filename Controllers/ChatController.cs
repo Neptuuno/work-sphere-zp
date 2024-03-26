@@ -68,6 +68,7 @@ namespace SocialNetwork.Controllers
                 UserSelf = user,
                 UserOther = await _chatService.GetOtherUser(chat, user),
                 Messages = await _chatService.GetMessagesForChat(chat),
+                Color = chat.Color
             };
             
             _userService.SetLastOpenedChatIdForUser(user, chat.Id);

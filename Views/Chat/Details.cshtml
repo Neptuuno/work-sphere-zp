@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Chat with " + Model.UserOther?.UserName;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var color = Model.Color;
 }
 
 @if (Model.UserOther == null)
@@ -14,21 +15,6 @@
         document.getElementById("messageInput").disabled = true;
         document.getElementById("sendButton").disabled = true;
     </script>
-}
-
-@{
-    var colors = new List<string> { "gray", "red", "yellow", "green", "blue", "indigo", "purple", "pink" };
-    var variants = new List<int> { 100, 200, 300, 400, 500, 600, 700, 800, 900 };
-}
-
-@foreach (var color in colors)
-{
-    foreach (var variant in variants)
-    {
-        <div class="@($"bg-{color}-{variant}")">
-            @($"bg-{color}-{variant}")
-        </div>
-    }
 }
 
 else

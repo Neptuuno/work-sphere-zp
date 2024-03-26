@@ -2,7 +2,7 @@
   <div x-data="app()" x-init="[initColor()]">
     <div>
       <div class="flex flex-row relative">
-        <div @@click="isOpen = !isOpen" class="cursor-pointer rounded-full ml-3 my-auto h-10 w-10 flex border-gray-400 border" :class="`bg-${currentColor}`" >
+        <div @@click="isOpen = !isOpen" class="cursor-pointer rounded-full ml-3 my-auto h-10 w-10 flex" :class="`bg-${currentColor}`" >
           
         </div>
         <div x-show="isOpen" @@click.away="isOpen = false" x-transition:enter="transition ease-out duration-100 transform"

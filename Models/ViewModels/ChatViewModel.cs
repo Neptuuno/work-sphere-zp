@@ -6,4 +6,6 @@ public class ChatViewModel
     public ICollection<MessageModel> Messages { get; set; } = new List<MessageModel>();
     public ApplicationUser? UserSelf { get; set; }
     public ApplicationUser? UserOther { get; set; }
+    public string? Color { get; set; } = "primary";
+
 }
