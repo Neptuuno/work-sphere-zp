@@ -16,6 +16,21 @@
     </script>
 }
 
+@{
+    var colors = new List<string> { "gray", "red", "yellow", "green", "blue", "indigo", "purple", "pink" };
+    var variants = new List<int> { 100, 200, 300, 400, 500, 600, 700, 800, 900 };
+}
+
+@foreach (var color in colors)
+{
+    foreach (var variant in variants)
+    {
+        <div class="@($"bg-{color}-{variant}")">
+            @($"bg-{color}-{variant}")
+        </div>
+    }
+}
+
 else
 {
     <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between  w-1/2 mb-8">
