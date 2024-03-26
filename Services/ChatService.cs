@@ -52,7 +52,7 @@ public class ChatService
         var currentUser = await _userManager.FindByIdAsync(currentUserID);
         var secondUser = await _userManager.FindByIdAsync(otherUserID);
 
-        if (currentUser == null || secondUser == null)
+        if (currentUser == null || secondUser == null || currentUser == secondUser)
         {
             return null;
         }

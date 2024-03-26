@@ -20,13 +20,15 @@ namespace SocialNetwork.Controllers
         private readonly WorkSphereContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ChatService _chatService;
+        private readonly UserService _userService;
 
         public ChatController(WorkSphereContext context, UserManager<ApplicationUser> userManager,
-            ChatService chatService)
+            ChatService chatService, UserService userService)
         {
             _context = context;
             _userManager = userManager;
             _chatService = chatService;
+            _userService = userService;
         }
 
         // GET: Chat
@@ -56,7 +58,7 @@ namespace SocialNetwork.Controllers
                 chatViewModels.Add(chatViewModel);
             }
             
-
+            ViewBag.LastChat = _userService.GetLastOpenedChatForUser(user);
             return View(chatViewModels);
         }
 
@@ -88,7 +90,7 @@ namespace SocialNetwork.Controllers
                 UserOther = await _chatService.GetOtherUser(chat, user),
                 Messages = await _chatService.GetMessagesForChat(chat),
             };
-
+            
             return View(chatViewModel);
         }
 

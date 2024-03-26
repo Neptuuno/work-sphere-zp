@@ -11,13 +11,15 @@ public class UserService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly WorkSphereContext _context;
     private readonly FileService _fileService;
+    private readonly ChatService _chatService;
 
 
-    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context, FileService fileService)
+    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context, FileService fileService, ChatService chatService)
     {
         _userManager = userManager;
         _context = context;
         _fileService = fileService;
+        _chatService = chatService;
     }
 
     public List<ApplicationUser> GetAllUsers()
@@ -39,6 +41,17 @@ public class UserService
             UserName = userDetail.UserName,
             ImageUrl = userDetail.ImageUrl,
         };
+    }
+
+    public async Task<ChatModel?> GetLastOpenedChatForUser(ApplicationUser user)
+    {
+        var lastChatId = user.LastOpenedChatId;
+        if (lastChatId == null)
+        {
+            return null;
+        }
+
+        return await _chatService.GetChatById(lastChatId.Value);
     }
 
     public async Task UpdateUser(ApplicationUser user ,Settings.InputModel newUserModel, IFormFile? image)
