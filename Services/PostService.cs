@@ -97,7 +97,7 @@ public class PostService
             PostType = postViewModel.PostType,
             Title = postViewModel.Title,
             Description = postViewModel.Description,
-            PostedOn = DateTime.Now,
+            PostedOn =  DateTime.UtcNow,
             Category = postViewModel.Category,
             ApplicationUserId = userId,
         };
@@ -108,7 +108,7 @@ public class PostService
         postModel.PostType = postViewModel.PostType;
         postModel.Title = postViewModel.Title;
         postModel.Description = postViewModel.Description;
-        postModel.UpdatedOn = DateTime.Now;
+        postModel.UpdatedOn = DateTime.UtcNow;
         postModel.Category = postViewModel.Category;
         postModel.ApplicationUserId = userId;
 

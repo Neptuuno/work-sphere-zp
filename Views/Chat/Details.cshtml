@@ -1,6 +1,7 @@
 @using SocialNetwork.Services
 @model SocialNetwork.Models.ViewModels.ChatViewModel
 @inject FileService FileService
+@inject ChatService ChatService
 
 @{
     ViewData["Title"] = "Chat with " + Model.UserOther?.UserName;
@@ -58,9 +59,9 @@ else
                         </svg>
                     }
                 }
-                <div class="message-main">
+                <div class="message-main bg-@(message.SenderId == Model.UserSelf.Id ? Model.Color : "white")">
                     <p class="message-content">@message.Content</p>
-                    <span class="message-timestamp" x-on>@message.Timestamp</span>
+                    <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
                 </div>
             </div>
         </div>
@@ -87,6 +88,7 @@ let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 let senderId = '@Model.UserSelf.Id';
 let receiverId = '@Model.UserOther.Id';
 let chatId = parseInt('@Model.Id');
+let imageUrl = '@Model.UserOther.ImageUrl';
 
 connection.start().catch(function (err) {
     return console.error(err.toString());
@@ -103,7 +105,7 @@ connection.on("ReceiveMessage", function (message) {
         let imgElement;
         if (message.sender.imageUrl != null) {
             imgElement = document.createElement("img");
-            imgElement.src = FileService.GetImageFullUrl(message.sender.imageUrl);
+            imgElement.src = imageUrl;
             imgElement.alt = "profile image";
             imgElement.classList.add("message-img");
         } else {

@@ -28,7 +28,7 @@
                         <ul>
                             @foreach(var post in user.Posts) 
                             {
-                                <li>@post.Title - @post.PostedOn.ToShortDateString()</li>
+                                <li>@post.Title - @post.PostedOn.ToLocalTime().ToShortDateString()</li>
                             }
                         </ul>
                     }

@@ -38,10 +38,8 @@ public class ChatService
         await _context.SaveChangesAsync();
     }
 
-   public async Task GetColor()
+    public async Task GetColor()
     {
-        
-        
     }
 
     public async Task<ChatModel> GetChatById(int id)
@@ -92,7 +90,7 @@ public class ChatService
 
         return chat;
     }
-    
+
     public async Task<List<MessageModel>> GetMessagesForChat(ChatModel chat)
     {
         var messages = await _context.Chats
@@ -104,6 +102,7 @@ public class ChatService
 
         return messages;
     }
+
     public async Task<MessageModel> CreateMessage(int chatId, string userId, string content)
     {
         var message = new MessageModel
@@ -111,7 +110,7 @@ public class ChatService
             ChatId = chatId,
             SenderId = userId,
             Content = content,
-            Timestamp = DateTime.Now
+            Timestamp = DateTime.UtcNow
         };
 
         _context.Messages.Add(message);
@@ -119,7 +118,25 @@ public class ChatService
 
         return message;
     }
-    
+
+    public string GetTimestampFormat(DateTime timestamp)
+    {
+        DateTime currentDate = DateTime.Now;
+        DateTime inputDate = timestamp;
+
+        if (currentDate.Year == inputDate.Year)
+        {
+            if (currentDate.Date == inputDate.Date)
+            {
+                return inputDate.ToString("HH:mm");
+            }
+
+            return inputDate.ToString("dd/MM");
+        }
+
+        return inputDate.ToString("dd/MM/yyyy");
+    }
+
     public async Task<List<ApplicationUser>> GetOtherUsers(IEnumerable<ChatModel> chats, ApplicationUser user)
     {
         var otherUsers = new List<ApplicationUser>();
@@ -135,8 +152,10 @@ public class ChatService
                 otherUsers.Add(otherUser);
             }
         }
+
         return otherUsers;
     }
+
     public async Task<ApplicationUser> GetOtherUser(ChatModel chat, ApplicationUser user)
     {
         var otherUser = await _context.ChatUsers
