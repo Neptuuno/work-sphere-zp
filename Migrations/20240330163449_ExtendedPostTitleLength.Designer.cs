@@ -11,8 +11,8 @@ using SocialNetwork.Context;
 namespace SocialNetwork.Migrations
 {
     [DbContext(typeof(WorkSphereContext))]
-    [Migration("20240330151843_FixedCascadeDeleteForUser")]
-    partial class FixedCascadeDeleteForUser
+    [Migration("20240330163449_ExtendedPostTitleLength")]
+    partial class ExtendedPostTitleLength
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -293,7 +293,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(24)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -311,7 +311,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -380,7 +380,7 @@ namespace SocialNetwork.Migrations
                     b.HasOne("SocialNetwork.Models.ChatModel", "Chat")
                         .WithMany("ChatUsers")
                         .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SocialNetwork.Models.ApplicationUser", "User")

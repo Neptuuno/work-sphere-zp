@@ -174,7 +174,7 @@ namespace SocialNetwork.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("LastChatId")
+                    b.Property<int?>("LastOpenedChatId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("LockoutEnabled")
@@ -290,7 +290,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(24)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -308,7 +308,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedOn")
