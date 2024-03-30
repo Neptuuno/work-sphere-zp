@@ -4,24 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-@{
-    var colors = new string[] { "gray", "red", "yellow", "green", "blue", "indigo", "purple", "pink" };
-    var variants = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900 };
-}
-<div class="font-thin">I dont undestand</div>
-@foreach (var color in colors)
-{
-    foreach (var variant in variants)
-    {
-        <div class="text-@color-@variant">
-            Text with color @color-@variant
-        </div>
-        <div class="bg-@color-@variant">
-            Background with color @color-@variant
-        </div>
-    }
-}
-
 @if (Model.Any())
 {
     <div x-data="{ tab: 'all'}">

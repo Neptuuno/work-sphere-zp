@@ -95,6 +95,7 @@ let senderId = '@Model.UserSelf.Id';
 let receiverId = '@Model.UserOther.Id';
 let chatId = parseInt('@Model.Id');
 let imageUrl = '@Model.UserOther.ImageUrl';
+let color = '@Model.Color';
 
 connection.start().catch(function (err) {
     return console.error(err.toString());
@@ -106,6 +107,7 @@ connection.on("ReceiveMessage", function (message) {
 
     let messageBoxDiv = document.createElement("div");
     messageBoxDiv.classList.add("message-box");
+    messageBoxDiv.classList.add("text-" + color);
 
     if (message.senderId !== senderId) {
         let imgElement;
@@ -134,7 +136,7 @@ connection.on("ReceiveMessage", function (message) {
 
     let messageMainDiv = document.createElement("div");
     messageMainDiv.classList.add("message-main");
-    messageMainDiv.classList.add("bg-primary");
+    messageMainDiv.classList.add("bg-" + color);
 
     let contentSpan = document.createElement("p");
     contentSpan.textContent = message.content;
