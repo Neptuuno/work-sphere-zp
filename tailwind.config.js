@@ -22,7 +22,7 @@ module.exports = {
     plugins: [],
     safelist: [
       {
-        pattern: /bg-(gray|red|yellow|green|blue|indigo|purple|pink)-(100|200|300|400|500|600|700|800|900)/,
+          pattern: /(bg|text)-(gray|red|yellow|green|blue|indigo|purple|pink)-(100|200|300|400|500|600|700|800|900)/,
       }
     ]
 }

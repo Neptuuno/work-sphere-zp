@@ -29,7 +29,6 @@ public class AdminController : Controller
     }
 
     // POST: Admin/CreateRole
-    // POST: RoleController/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "SuperAdmin")]

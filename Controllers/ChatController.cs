@@ -43,7 +43,7 @@ namespace SocialNetwork.Controllers
             var lastChatId = _userService.GetLastOpenedChatIdForUser(user);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(lastChatId);
-            return RedirectToAction(nameof(Details), new { id = lastChatId});
+            return RedirectToAction(nameof(Details), new { id = lastChatId });
         }
 
         // GET: Chats/Details/5
@@ -55,8 +55,10 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var chat = id.HasValue ? await _chatService.GetChatById(id.Value) : _chatService.GetChatsForUser(user).Result.FirstOrDefault();
-            
+            var chat = id.HasValue
+                ? await _chatService.GetChatById(id.Value)
+                : _chatService.GetChatsForUser(user).Result.FirstOrDefault();
+
             if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
             {
                 return View("Index");
@@ -70,7 +72,7 @@ namespace SocialNetwork.Controllers
                 Messages = await _chatService.GetMessagesForChat(chat),
                 Color = chat.Color
             };
-            
+
             _userService.SetLastOpenedChatIdForUser(user, chat.Id);
             return View(chatViewModel);
         }
@@ -91,6 +93,28 @@ namespace SocialNetwork.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateColor(int chatId, string color)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            var chat = await _chatService.GetChatById(chatId);
+
+            if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
+            {
+                return NotFound();
+            }
+
+            await _chatService.SaveColor(chat, color);
+
+            return RedirectToAction(nameof(Details), new { id = chat.Id });
+        }
+
         // POST: Chat/Delete/5 TODO(Do something later maybe?)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -108,7 +132,7 @@ namespace SocialNetwork.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok();
         }
 
         private bool ChatModelExists(int id)
