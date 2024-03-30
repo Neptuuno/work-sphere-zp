@@ -2,162 +2,150 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.ViewModels;
+using SocialNetwork.Services;
 
-namespace SocialNetwork.Controllers
+namespace SocialNetwork.Controllers;
+
+[Authorize]
+public class PostController : Controller
 {
-    public class PostController : Controller
+    private readonly WorkSphereContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly PostService _postService;
+
+    public PostController(WorkSphereContext context, UserManager<ApplicationUser> userManager, PostService postService)
     {
-        private readonly WorkSphereContext _context;
+        _context = context;
+        _userManager = userManager;
+        _postService = postService;
+    }
 
-        public PostController(WorkSphereContext context)
+    // GET: Post
+    public async Task<IActionResult> Index()
+    {
+        return View(await _postService.GetAllPostsAsync());
+    }
+
+    // GET: Post/Details/5
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null || _context.Posts == null)
         {
-            _context = context;
+            return StatusCode(404, "Not Found, Sorry!");
         }
 
-        // GET: Post
-        public async Task<IActionResult> Index()
+        PostModel? postModel = await _postService.GetPostByIdAsync(id.Value);
+        if (postModel == null)
         {
-              return _context.Posts != null ? 
-                          View(await _context.Posts.ToListAsync()) :
-                          Problem("Entity set 'WorkSphereContext.Posts'  is null.");
+            return StatusCode(404, "Not Found, Sorry!");
         }
 
-        // GET: Post/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
+        return View(postModel);
+    }
 
-            var postModel = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (postModel == null)
-            {
-                return NotFound();
-            }
+    // GET: Post/Create
+    public IActionResult Create()
+    {
+        return View();
+    }
 
-            return View(postModel);
-        }
-
-        // GET: Post/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Post/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,PostType,Title,Description,PostedOn,Category,ApplicationUserId")] PostModel postModel)
+    // POST: Post/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(PostViewModel postViewModel, IFormFile? ImageUrl)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(postModel);
-                await _context.SaveChangesAsync();
+                await _postService.CreatePostAsync(postViewModel, user.Id, ImageUrl);
                 return RedirectToAction(nameof(Index));
             }
-            return View(postModel);
+            ModelState.AddModelError(string.Empty, "Error when creating new post");
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "User not logged in");
         }
 
-        // GET: Post/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
+        return View(postViewModel);
+    }
 
-            var postModel = await _context.Posts.FindAsync(id);
-            if (postModel == null)
-            {
-                return NotFound();
-            }
-            return View(postModel);
+    // GET: Post/Edit/5
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null || _context.Posts == null)
+        {
+            return NotFound();
         }
 
-        // POST: Post/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,PostType,Title,Description,PostedOn,Category,ApplicationUserId")] PostModel postModel)
+        var postModel = await _postService.GetPostByIdAsync(id.Value);
+        if (postModel == null)
         {
-            if (id != postModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(postModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PostModelExists(postModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(postModel);
+            return NotFound();
         }
 
-        // GET: Post/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        var postViewModel = _postService.CreateViewPostModelByModel(postModel);
+
+        return View(postViewModel);
+    }
+
+    // POST: Post/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, PostViewModel postViewModel, IFormFile? ImageUrl)
+    {
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var postModel = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (postModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(postModel);
+            return BadRequest("User not logged in");
         }
-
-        // POST: Post/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Posts == null)
-            {
-                return Problem("Entity set 'WorkSphereContext.Posts'  is null.");
-            }
-            var postModel = await _context.Posts.FindAsync(id);
-            if (postModel != null)
-            {
-                _context.Posts.Remove(postModel);
-            }
+        var postModel = await _postService.GetPostByIdAsync(id);
             
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        if (!_postService.IsAuthorized(user,postModel))
+        {
+            return BadRequest("Unauthorized");
         }
 
-        private bool PostModelExists(int id)
+        if (ModelState.IsValid)
         {
-          return (_context.Posts?.Any(e => e.Id == id)).GetValueOrDefault();
+            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
+            return RedirectToAction(nameof(Details), new {id});
         }
+
+        return View(postViewModel);
+    }
+
+    // POST: Post/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return BadRequest("User not logged in");
+        }
+        var postModel = await _postService.GetPostByIdAsync(id);
+        if (!_postService.IsAuthorized(user,postModel))
+        {
+            return BadRequest("Unauthorized");
+        }
+            
+        await _postService.DeletePostAsync(id);
+        return RedirectToAction(nameof(Index));
     }
 }

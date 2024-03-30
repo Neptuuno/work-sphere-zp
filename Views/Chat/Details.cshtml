@@ -1,0 +1,255 @@
+@using SocialNetwork.Services
+@using SocialNetwork.Models.ViewModels
+@model SocialNetwork.Models.ViewModels.ChatViewModel
+@inject FileService FileService
+@inject ChatService ChatService
+
+@{
+    ViewData["Title"] = "Chat with " + Model.UserOther?.UserName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var colors = new string[] { "gray", "red", "yellow", "green", "blue", "indigo", "purple", "pink" };
+    var variants = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900 };
+}
+
+@foreach (var color in colors)
+{
+    foreach (var variant in variants)
+    {
+        <div class="text-@color-@variant">
+            Text with color @color-@variant
+        </div>
+        <div class="bg-@color-@variant">
+            Background with color @color-@variant
+        </div>
+    }
+}
+
+@if (Model.UserOther == null)
+{
+    <h4>You are alone in the chat</h4>
+    <script>
+        document.getElementById("messageInput").disabled = true;
+        document.getElementById("sendButton").disabled = true;
+    </script>
+}
+
+else
+{
+    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between items-center w-1/2 mb-8">
+        <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther.Id">
+            <div x- class="flex gap-2 items-center">
+                @if (Model.UserOther.ImageUrl != null)
+                {
+                    <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                    </svg>
+                }
+                <h4 class="text-xl">@Model.UserOther.UserName</h4>
+            </div>
+        </a>
+        <div>
+            @await Html.PartialAsync("components/_Chat-Color-picker", new ChatColorPickerModel
+            {
+                Color = Model.Color,
+                ChatId = Model.Id
+            })
+        </div>
+    </div>
+}
+
+<div id="messagesList" class="flex flex-col gap-6 w-1/2">
+    @foreach (var message in Model.Messages)
+    {
+        var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
+        <div class="@messageClass">
+            <div class="message-box text-@Model.Color">
+                @if (message.Sender != Model.UserSelf)
+                {
+                    @if (message.Sender.ImageUrl != null)
+                    {
+                        <img class="message-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
+                    }
+                    else
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                    }
+                }
+                <div class="message-main bg-@(message.SenderId == Model.UserSelf.Id ? Model.Color : "white")">
+                    <p class="message-content">@message.Content</p>
+                    <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
+    <div class="flex gap-2 w-full items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
+        </svg>
+        <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa"/>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton">
+        <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
+    </svg>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+"use strict";
+
+let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+let senderId = '@Model.UserSelf.Id';
+let receiverId = '@Model.UserOther.Id';
+let chatId = parseInt('@Model.Id');
+let imageUrl = '@Model.UserOther.ImageUrl';
+
+connection.start().catch(function (err) {
+    return console.error(err.toString());
+});
+
+connection.on("ReceiveMessage", function (message) {
+    let messageDiv = document.createElement("div");
+    messageDiv.classList.add(message.senderId === senderId ? "self-message" : "other-message");
+
+    let messageBoxDiv = document.createElement("div");
+    messageBoxDiv.classList.add("message-box");
+
+    if (message.senderId !== senderId) {
+        let imgElement;
+        if (message.sender.imageUrl != null) {
+            imgElement = document.createElement("img");
+            imgElement.src = imageUrl;
+            imgElement.alt = "profile image";
+            imgElement.classList.add("message-img");
+        } else {
+            imgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            imgElement.setAttribute("viewBox", "0 0 24 24");
+            imgElement.setAttribute("fill", "none");
+            imgElement.setAttribute("stroke-width", "1.5");
+            imgElement.setAttribute("stroke", "currentColor");
+            imgElement.classList.add("w-10", "h-10");
+
+            let pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathElement.setAttribute("stroke-linecap", "round");
+            pathElement.setAttribute("stroke-linejoin", "round");
+            pathElement.setAttribute("d", "M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z");
+
+            imgElement.appendChild(pathElement);
+        }
+        messageBoxDiv.appendChild(imgElement);
+    }
+
+    let messageMainDiv = document.createElement("div");
+    messageMainDiv.classList.add("message-main");
+    messageMainDiv.classList.add("bg-primary");
+
+    let contentSpan = document.createElement("p");
+    contentSpan.textContent = message.content;
+    contentSpan.classList.add("message-content");
+    messageMainDiv.appendChild(contentSpan);
+
+    let timestampSpan = document.createElement("span");
+    timestampSpan.textContent = formatDateTime(message.timestamp);
+    timestampSpan.classList.add("message-timestamp");
+    messageMainDiv.appendChild(timestampSpan);
+
+    messageBoxDiv.appendChild(messageMainDiv);
+    messageDiv.appendChild(messageBoxDiv);
+
+    document.getElementById("messagesList").appendChild(messageDiv);
+});
+
+document.getElementById("sendButton").addEventListener("click", function (event) {
+    let message = document.getElementById("messageInput").value;
+    connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
+        return console.error(err.toString());
+    });
+    document.getElementById("messageInput").value = "";
+    event.preventDefault();
+});
+
+function formatDateTime(date) {
+    let currentDate = new Date();
+    let inputDate = new Date(date);
+
+    if (currentDate.getFullYear() === inputDate.getFullYear()) {
+        if (currentDate.getDate() === inputDate.getDate() && currentDate.getMonth() === inputDate.getMonth()) {
+            return inputDate.getHours().toString().padStart(2, '0') + ':' + inputDate.getMinutes().toString().padStart(2, '0');
+        }
+        else {
+            return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0');
+        }
+    }
+    
+    else {
+        return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + inputDate.getFullYear();
+    }
+}
+    
+</script>
+
+<style>
+.self-message {
+    color: green;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.other-message {
+    color: red;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.message-main{
+flex-direction: column;
+border-radius: 0.25rem;
+padding: 0.5rem;
+--tw-text-opacity: 1;
+color: rgb(17 24 39 / var(--tw-text-opacity));
+--tw-shadow: 4px 4px 0px 0px #000000;
+--tw-shadow-colored: 4px 4px 0px 0px var(--tw-shadow-color);
+box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+max-width: 16rem;
+border-width: 1px;
+--tw-border-opacity: 1;
+border-color: rgb(0 0 0 / var(--tw-border-opacity));
+display: flex;
+gap: 0.5rem;
+
+}
+
+.message-content{
+overflow: auto;
+overflow-wrap: break-word;
+}
+
+.message-box{
+display: flex;
+gap: 0.5rem;
+align-items: flex-end;
+}
+
+.message-img
+{
+border-radius: 9999px;
+height: 2.5rem;
+width: 2.5rem;
+}
+
+.message-timestamp{
+font-size: 0.75rem;
+line-height: 1rem;
+}
+</style>

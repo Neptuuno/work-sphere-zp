@@ -30,7 +30,6 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string Username { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -59,6 +58,9 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            [Required]
+            [Display(Name = "User name")]
+            public string UserName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -66,11 +68,11 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                UserName = userName
             };
         }
 
@@ -109,6 +111,15 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+            if (user.UserName != Input.UserName && await _userManager.FindByNameAsync(Input.UserName) == null)
+            {
+                await _userManager.SetUserNameAsync(user,Input.UserName);
+            }
+            else
+            {
+                StatusMessage = "This username is already taken.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);

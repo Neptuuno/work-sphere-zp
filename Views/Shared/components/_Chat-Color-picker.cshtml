@@ -1,0 +1,68 @@
+@model SocialNetwork.Models.ViewModels.ChatColorPickerModel
+
+<div class="bg-white mx-auto my-auto p-6">
+    <div x-data="colorPicker()" x-init="[initColor()]">
+        <div>
+            <div class="flex flex-row relative">
+                <div @@click="isOpen = !isOpen" class="cursor-pointer rounded-full ml-3 my-auto h-10 w-10 flex" :class="`bg-${currentColor}`">
+
+                </div>
+                <div x-show="isOpen" @@click.away="isOpen = false" x-transition:enter="transition ease-out duration-100 transform"
+                     x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75 transform" x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95" class="border border-gray-300 origin-top-right absolute right-0 top-full mt-2 rounded-md shadow-lg">
+                    <div class="rounded-md bg-white shadow-offset border border-black p-2">
+                        <form id="colorForm" method="post" asp-controller="Chat" asp-action="UpdateColor">
+<input type="hidden" name="color" id="selectedColor"/>
+                                <input type="hidden" name="chatId" value="@Model.ChatId"/>
+                            <div class="flex">
+                                <template x-for="color in colors">
+                                    <div class="">
+                                        <template x-for="variant in variants">
+                                            <div @@click="selectColor(color,variant)" class="cursor-pointer w-6 h-6 rounded-full mx-1 my-1" :class="`bg-${color}-${variant}`"></div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function colorPicker() {
+      return {
+        colors: ['gray', 'red', 'yellow', 'green', 'blue', 'indigo', 'purple', 'pink'],
+        variants: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        currentColor: '@Model.Color',
+        iconColor: '',
+        isOpen: false,
+        initColor () {
+          if (this.currentColor === '') {
+          this.currentColor = 'red-800'
+          this.setIconWhite()
+          }
+        },
+        setIconWhite () {
+          this.iconColor = 'text-white'
+        },
+        setIconBlack () {
+          this.iconColor = 'text-black'
+        },
+        selectColor (color, variant) {
+          this.currentColor = color + '-' + variant
+          if (variant < 500) {
+            this.setIconBlack()
+          }
+          else {
+            this.setIconWhite()
+          }
+         document.getElementById('selectedColor').value = this.currentColor;
+            document.getElementById('colorForm').submit();
+         }
+      }
+  }
+</script>
