@@ -9,6 +9,8 @@
     <ItemGroup>
       <Folder Include="Database\" />
       <Folder Include="Middleware\" />
+      <Folder Include="wwwroot\file-storage\posts\c086ba60-9a6b-4e52-bccb-dc58544e8d2b\" />
+      <Folder Include="wwwroot\file-storage\users\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -98,6 +100,7 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\users\61168281-1837-4cec-b738-09610932b12f\b81efa6c-c0f1-4e71-a4a2-1c4c42d3c2e0.png" />
     </ItemGroup>
 
 </Project>

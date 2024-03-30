@@ -14,7 +14,8 @@ public class UserService
     private readonly ChatService _chatService;
 
 
-    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context, FileService fileService, ChatService chatService)
+    public UserService(UserManager<ApplicationUser> userManager, WorkSphereContext context, FileService fileService,
+        ChatService chatService)
     {
         _userManager = userManager;
         _context = context;
@@ -31,6 +32,7 @@ public class UserService
     {
         return await _userManager.FindByIdAsync(id);
     }
+
     public async Task<ApplicationUser?> GetSafeUserDetails(string id)
     {
         var userDetail = await _userManager.FindByIdAsync(id);
@@ -47,18 +49,20 @@ public class UserService
     {
         return user.LastOpenedChatId;
     }
+
     public void SetLastOpenedChatIdForUser(ApplicationUser user, int chatId)
     {
         user.LastOpenedChatId = chatId;
         _userManager.UpdateAsync(user);
     }
 
-    public async Task UpdateUser(ApplicationUser user ,Settings.InputModel newUserModel, IFormFile? image)
+    public async Task UpdateUser(ApplicationUser user, Settings.InputModel newUserModel, IFormFile? image)
     {
         await SetUserImage(user, image);
         await _userManager.UpdateAsync(GetUserModel(newUserModel, user));
     }
-    public async Task SetUserImage( ApplicationUser user, IFormFile? image)
+
+    public async Task SetUserImage(ApplicationUser user, IFormFile? image)
     {
         if (image != null)
         {
@@ -66,7 +70,20 @@ public class UserService
             user.ImageUrl = await _fileService.SaveImageAsync(image, user.Id, "users", existingFileName);
         }
     }
-    
+
+    public async Task<bool> CanRemoveUser(ApplicationUser? user, ApplicationUser? toRemove)
+    {
+        if (user == null || toRemove == null || user.Id == toRemove.Id) return false;
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var toRemoveRoles = await _userManager.GetRolesAsync(toRemove);
+
+        if (userRoles.Contains("SuperAdmin") && !toRemoveRoles.Contains("SuperAdmin")) return true;
+        if (userRoles.Contains("Admin") && !toRemoveRoles.Contains("Admin") && !toRemoveRoles.Contains("SuperAdmin")) return true;
+
+        return false;
+    }
+
     public Settings.InputModel GetInputModel(ApplicationUser user)
     {
         return new Settings.InputModel

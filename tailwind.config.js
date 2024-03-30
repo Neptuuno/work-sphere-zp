@@ -2,6 +2,7 @@
 module.exports = {
     content: [
         './Pages/**/*.cshtml',
+        './Areas/Identity/Pages/**/*.cshtml',
         './Views/**/*.cshtml'
     ],
     theme: {
@@ -22,8 +23,7 @@ module.exports = {
     plugins: [],
     safelist: [
       {
-          pattern: /(bg|text)-(gray|red|yellow|green|blue|indigo|purple|pink)-(100|200|300|400|500|600|700|800|900)/,
-      }
+          pattern: /(bg|text)-(gray|red|yellow|green|blue|indigo|purple|pink)-(100|200|300|400|500|600|700|800|900)/,      }
     ]
 }
 

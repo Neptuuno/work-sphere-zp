@@ -9,24 +9,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@{
-    var colors = new string[] { "gray", "red", "yellow", "green", "blue", "indigo", "purple", "pink" };
-    var variants = new int[] { 100, 200, 300, 400, 500, 600, 700, 800, 900 };
-}
-
-@foreach (var color in colors)
-{
-    foreach (var variant in variants)
-    {
-        <div class="text-@color-@variant">
-            Text with color @color-@variant
-        </div>
-        <div class="bg-@color-@variant">
-            Background with color @color-@variant
-        </div>
-    }
-}
-
 @if (Model.UserOther == null)
 {
     <h4>You are alone in the chat</h4>
@@ -106,13 +88,13 @@ else
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
-"use strict";
 
 let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 let senderId = '@Model.UserSelf.Id';
 let receiverId = '@Model.UserOther.Id';
 let chatId = parseInt('@Model.Id');
 let imageUrl = '@Model.UserOther.ImageUrl';
+let color = '@Model.Color';
 
 connection.start().catch(function (err) {
     return console.error(err.toString());
@@ -124,6 +106,7 @@ connection.on("ReceiveMessage", function (message) {
 
     let messageBoxDiv = document.createElement("div");
     messageBoxDiv.classList.add("message-box");
+    messageBoxDiv.classList.add("text-" + color);
 
     if (message.senderId !== senderId) {
         let imgElement;
@@ -152,7 +135,7 @@ connection.on("ReceiveMessage", function (message) {
 
     let messageMainDiv = document.createElement("div");
     messageMainDiv.classList.add("message-main");
-    messageMainDiv.classList.add("bg-primary");
+    messageMainDiv.classList.add("bg-" + color);
 
     let contentSpan = document.createElement("p");
     contentSpan.textContent = message.content;
