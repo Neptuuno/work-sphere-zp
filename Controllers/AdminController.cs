@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Models;
+using SocialNetwork.Services;
 
 namespace SocialNetwork.Controllers;
 
@@ -12,11 +13,13 @@ public class AdminController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserService _userService;
 
-    public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, UserService userService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _userService = userService;
     }
 
     // GET
@@ -102,7 +105,7 @@ public class AdminController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
         var user = await _userManager.FindByIdAsync(userId);
-        if (user != null && user != currentUser)
+        if (await _userService.CanRemoveUser(currentUser, user))
         {
             await _userManager.DeleteAsync(user);
         }
