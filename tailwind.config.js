@@ -2,6 +2,7 @@
 module.exports = {
     content: [
         './Pages/**/*.cshtml',
+        './Areas/Identity/Pages/**/*.cshtml',
         './Views/**/*.cshtml'
     ],
     theme: {
