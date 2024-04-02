@@ -32,7 +32,7 @@
 
         <!-- All posts -->
         <div class="flex flex-col gap-16 items-center" x-show="tab === 'all'" x-transition>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Reverse())
             {
                 @await Html.PartialAsync("_PostDetailsPartial", item)
             }
@@ -40,7 +40,7 @@
 
         <!-- Looking posts -->
         <div class="flex flex-col gap-16 items-center" x-show="tab === 'looking'" x-transition>
-                    @foreach (var item in Model.Where(p => p.PostType == PostType.Looking))
+                    @foreach (var item in Model.Reverse().Where(p => p.PostType == PostType.Looking))
                     {
                         @await Html.PartialAsync("_PostDetailsPartial", item)
                     }
@@ -48,7 +48,7 @@
 
         <!-- Offering posts -->
         <div class="flex flex-col gap-16 items-center" x-show="tab === 'offering'" x-transition>
-            @foreach (var item in Model.Where(p => p.PostType == PostType.Offering))
+            @foreach (var item in Model.Reverse().Where(p => p.PostType == PostType.Offering))
             {
                 @await Html.PartialAsync("_PostDetailsPartial", item)
             }

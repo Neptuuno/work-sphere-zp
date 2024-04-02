@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SocialNetwork.Models;
+using SocialNetwork.Models.ViewModels;
+using SocialNetwork.Services;
 
 namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
 {
@@ -17,13 +19,15 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserService _userService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager, UserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _userService = userService;
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public class InputModel
+        public class InputModel : ApplicationUserViewModel
         {
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -63,6 +67,9 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             public string UserName { get; set; }
         }
 
+        [BindProperty] 
+        public IFormFile Image { get; set; }
+        
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
@@ -72,7 +79,8 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                UserName = userName
+                UserName = userName,
+                Age = user.Age,
             };
         }
 
@@ -102,6 +110,9 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            await _userService.SetUserImage(user, Image);
+            await _userManager.UpdateAsync(_userService.GetUserModel(Input, user));
+            
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {

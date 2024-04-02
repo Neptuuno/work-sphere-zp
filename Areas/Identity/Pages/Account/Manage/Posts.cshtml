@@ -1,0 +1,7 @@
+@page
+@model SocialNetwork.Areas.Identity.Pages.Account.Manage.Posts
+
+    @foreach (var item in Model.UserPosts.Reverse())
+    {
+        @await Html.PartialAsync("_PostDetailsPartial", item)
+    }

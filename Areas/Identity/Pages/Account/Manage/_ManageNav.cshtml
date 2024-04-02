@@ -10,9 +10,20 @@
                 </svg>
         <a class="text-2xl text-@ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a>
     </div>
-    <div class="border border-black rounded w-9/12 p-2 shadow-offset flex items-center gap-2">
-        <a class="text-2xl text-@ManageNavPages.SettingsNavClass(ViewContext)" id="settings" asp-page="./Settings">Settings</a>
+    <div class="border border-black rounded w-9/12 py-2 pl-2 shadow-offset flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-@ManageNavPages.PostsNavClass(ViewContext)">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+        </svg>
+        <a class="text-2xl text-@ManageNavPages.PostsNavClass(ViewContext)" id="posts" asp-page="./Posts">Posts</a>
     </div>
+     <div class="border border-black rounded w-9/12 py-2 pl-2 shadow-offset flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-@ManageNavPages.SecurityNavClass(ViewContext)">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+            <a class="text-2xl text-@ManageNavPages.SecurityNavClass(ViewContext)" id="security" asp-page="./Security">Security</a>
+        </div>
+    
+
     <div class="border border-black rounded w-9/12 py-2 pl-2 shadow-offset flex items-center gap-2">
         <a class="text-2xl text-@ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a>
     </div>

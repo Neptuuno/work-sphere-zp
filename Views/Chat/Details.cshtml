@@ -89,6 +89,8 @@ else
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
 
+window.onload = function() {window.scrollTo(0,document.body.scrollHeight);}
+
 let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 let senderId = '@Model.UserSelf.Id';
 let receiverId = '@Model.UserOther.Id';

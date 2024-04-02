@@ -30,7 +30,9 @@ public class UserService
 
     public async Task<ApplicationUser?> GetUserDetails(string id)
     {
-        return await _userManager.FindByIdAsync(id);
+        return await _userManager.Users.Where(u => u.Id == id)
+            .Include(u => u.Posts)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<ApplicationUser?> GetSafeUserDetails(string id)
@@ -56,12 +58,6 @@ public class UserService
         _userManager.UpdateAsync(user);
     }
 
-    public async Task UpdateUser(ApplicationUser user, Settings.InputModel newUserModel, IFormFile? image)
-    {
-        await SetUserImage(user, image);
-        await _userManager.UpdateAsync(GetUserModel(newUserModel, user));
-    }
-
     public async Task SetUserImage(ApplicationUser user, IFormFile? image)
     {
         if (image != null)
@@ -79,21 +75,13 @@ public class UserService
         var toRemoveRoles = await _userManager.GetRolesAsync(toRemove);
 
         if (userRoles.Contains("SuperAdmin") && !toRemoveRoles.Contains("SuperAdmin")) return true;
-        if (userRoles.Contains("Admin") && !toRemoveRoles.Contains("Admin") && !toRemoveRoles.Contains("SuperAdmin")) return true;
+        if (userRoles.Contains("Admin") && !toRemoveRoles.Contains("Admin") &&
+            !toRemoveRoles.Contains("SuperAdmin")) return true;
 
         return false;
     }
 
-    public Settings.InputModel GetInputModel(ApplicationUser user)
-    {
-        return new Settings.InputModel
-        {
-            Age = user.Age,
-            ImageUrl = user.ImageUrl,
-        };
-    }
-
-    private ApplicationUser GetUserModel(Settings.InputModel inputModel, ApplicationUser user)
+    public ApplicationUser GetUserModel(IndexModel.InputModel inputModel, ApplicationUser user)
     {
         user.Age = inputModel.Age;
         return user;

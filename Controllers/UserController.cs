@@ -21,11 +21,6 @@ public class UserController : Controller
         _userService = userService;
     }
 
-    public IActionResult Index()
-    {
-        return View(_userService.GetAllUsers());
-    }
-
     public async Task<IActionResult> Detail(string? id)
     {
         if (id == null)

@@ -29,6 +29,14 @@ public class PostService
     {
         return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
     }
+    
+    public async Task<IEnumerable<PostModel>> GetPostsByUserAsync(string userId)
+    {
+        return await _context.Posts
+            .Where(p => p.ApplicationUserId == userId)
+            .Include(p => p.ApplicationUser)
+            .ToListAsync();
+    }
 
     public async Task<PostModel?> GetPostByIdAsync(int id)
     {
