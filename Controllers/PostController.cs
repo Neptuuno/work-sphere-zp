@@ -72,6 +72,7 @@ public class PostController : Controller
                 await _postService.CreatePostAsync(postViewModel, user.Id, ImageUrl);
                 return RedirectToAction(nameof(Index));
             }
+
             ModelState.AddModelError(string.Empty, "Error when creating new post");
         }
         else
@@ -90,7 +91,7 @@ public class PostController : Controller
         {
             return BadRequest("User not logged in");
         }
-        
+
         if (id == null || _context.Posts == null)
         {
             return NotFound();
@@ -101,7 +102,8 @@ public class PostController : Controller
         {
             return NotFound();
         }
-        if (!_postService.IsAuthor(user,postModel))
+
+        if (!_postService.IsAuthor(user, postModel))
         {
             return BadRequest("Unauthorized");
         }
@@ -123,25 +125,26 @@ public class PostController : Controller
         {
             return BadRequest("User not logged in");
         }
+
         var postModel = await _postService.GetPostByIdAsync(id);
-            
-        if (!_postService.IsAuthor(user,postModel))
+
+        if (!_postService.IsAuthor(user, postModel))
         {
             return BadRequest("Unauthorized");
         }
 
         if (ModelState.IsValid)
         {
-            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
-            return RedirectToAction(nameof(Details), new { id = id});
+            await _postService.UpdatePostAsync(postModel, postViewModel, user.Id, ImageUrl);
+            return RedirectToAction(nameof(Details), new { id = id });
         }
 
         return View(postViewModel);
     }
-    
-    
+
+
     [HttpPost]
-    public async Task AddLike(int id, int userId)
+    public async Task UpdateLike(int id, string userId, bool liked)
     {
         Console.WriteLine("liked removed");
         ApplicationUser? user = await _userManager.GetUserAsync(User);
@@ -155,38 +158,8 @@ public class PostController : Controller
         {
             return;
         }
-        Console.ForegroundColor= ConsoleColor.Green;
 
-        if (!postModel.LikedByUsers.Contains(user))
-        {
-            postModel.LikedByUsers.Add(user);
-            await _context.SaveChangesAsync();
-        }
-        
-    }
-
-    [HttpPost]
-    public async Task RemoveLike(int id, int userId)
-    {
-        ApplicationUser? user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return;
-        }
-
-        var postModel = await _postService.GetPostByIdAsync(id);
-        if (postModel == null)
-        {
-            return;
-        }
-        Console.WriteLine("liked removed");
-
-        if (postModel.LikedByUsers.Contains(user))
-        {
-            postModel.LikedByUsers.Remove(user);
-            await _context.SaveChangesAsync();
-        }
-
+        await _postService.UpdateLike(postModel, user, liked);
     }
 
     // POST: Post/Delete/5
@@ -199,12 +172,13 @@ public class PostController : Controller
         {
             return BadRequest("User not logged in");
         }
+
         var postModel = await _postService.GetPostByIdAsync(id);
-        if (!_postService.IsAuthorized(user,postModel))
+        if (!_postService.IsAuthorized(user, postModel))
         {
             return BadRequest("Unauthorized");
         }
-            
+
         await _postService.DeletePostAsync(id);
         return RedirectToAction(nameof(Index));
     }

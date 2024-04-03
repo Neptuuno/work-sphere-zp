@@ -60,6 +60,28 @@ public class PostService
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateLike(PostModel post, ApplicationUser user, bool liked)
+    {
+        if (liked && post.LikedByUsers.All(u => u.Id != user.Id))
+        {
+            post.LikedByUsers.Add(user);
+        }
+        else if (!liked && post.LikedByUsers.Any(u => u.Id == user.Id))
+        {
+            post.LikedByUsers.Remove(user);
+        }
+
+        try
+        {
+            _context.Update(post);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return;
+        }
+    }
+
     public async Task UpdatePostAsync(PostModel postModel, PostViewModel postViewModel, string userId, IFormFile? image)
     {
         var updatedPostModel = UpdatePostModelByViewModel(postModel, postViewModel, userId);
@@ -107,7 +129,7 @@ public class PostService
     {
         return post.ApplicationUserId == user.Id;
     }
-    
+
     public bool HasLikedPost(ApplicationUser user, PostModel post)
     {
         return post.LikedByUsers.Any(u => u.Id == user.Id);

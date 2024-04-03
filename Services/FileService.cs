@@ -65,6 +65,7 @@ public class FileService
         if (url == null)
             return;
         string filePath = Path.Combine(_targetFolder, url);
+        Console.WriteLine(filePath);
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
