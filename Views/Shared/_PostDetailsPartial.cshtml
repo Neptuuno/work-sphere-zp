@@ -11,7 +11,7 @@
 
 <div class="border border-black shadow-offset p-6 w-6/12">
     <div class="flex justify-between">
-        <a asp-controller="User" asp-action="Detail" asp-route-userId="@Model.ApplicationUser.Id">
+        <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.ApplicationUser.Id">
             <div class="flex gap-2 items-center">
                 <img class="w-12 h-12 rounded-full" src="@FileService.GetImageFullUrl(Model.ApplicationUser.ImageUrl)" alt="profile image"/>
                 <h3 class="text-lg">@Model.ApplicationUser.UserName</h3>
@@ -21,7 +21,7 @@
             <h4 class="text-3xl">@Model.PostType</h4>
         </div>
     </div>
-    <a asp-controller="Post" asp-action="Details" asp-route-userId="@Model.Id">
+    <a asp-controller="Post" asp-action="Details" asp-route-id="@Model.Id">
         <div class="flex justify-between items-center">
             <h1 class="text-4xl my-8">@Model.Title</h1>
             <div class="bg-blue-500 text-white rounded p-2 shadow-offset border-black border sm:text-sm sm:leading-6">
@@ -59,7 +59,7 @@
         </div>
         @foreach(var likedBy in Model.LikedByUsers)
         {
-            <a asp-controller="User" asp-action="Detail" asp-route-userId="@likedBy.Id">
+            <a asp-controller="User" asp-action="Detail" asp-route-id="@likedBy.Id">
                 <img class="w-8 h-8 rounded-full" src="@FileService.GetImageFullUrl(likedBy.ImageUrl)" alt="profile image"/>
             </a>
         }

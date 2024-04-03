@@ -133,7 +133,7 @@ public class PostController : Controller
         if (ModelState.IsValid)
         {
             await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
-            return RedirectToAction(nameof(Details), new {id});
+            return RedirectToAction(nameof(Details), new { id = id});
         }
 
         return View(postViewModel);
@@ -141,7 +141,7 @@ public class PostController : Controller
     
     
     [HttpPost]
-    public async Task AddLike(int userId)
+    public async Task AddLike(int id, int userId)
     {
         Console.WriteLine("liked removed");
         ApplicationUser? user = await _userManager.GetUserAsync(User);
@@ -150,7 +150,7 @@ public class PostController : Controller
             return;
         }
 
-        var postModel = await _postService.GetPostByIdAsync(userId);
+        var postModel = await _postService.GetPostByIdAsync(id);
         if (postModel == null)
         {
             return;
@@ -166,7 +166,7 @@ public class PostController : Controller
     }
 
     [HttpPost]
-    public async Task RemoveLike(int userId)
+    public async Task RemoveLike(int id, int userId)
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -174,7 +174,7 @@ public class PostController : Controller
             return;
         }
 
-        var postModel = await _postService.GetPostByIdAsync(userId);
+        var postModel = await _postService.GetPostByIdAsync(id);
         if (postModel == null)
         {
             return;

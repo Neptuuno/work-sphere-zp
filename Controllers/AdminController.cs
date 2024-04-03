@@ -60,12 +60,12 @@ public class AdminController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<IActionResult> AssignRole(string userId, string roleName)
+    public async Task<IActionResult> AssignRole(string id, string roleName)
     {
         var currentUser = await _userManager.GetUserAsync(User);
         if (await _userManager.IsInRoleAsync(currentUser, "SuperAdmin"))
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(id);
             var roleExists = await _roleManager.RoleExistsAsync(roleName);
             var isCurrentUser = currentUser == user;
             if (user != null && roleExists && roleName != "SuperAdmin" && !isCurrentUser)
@@ -101,10 +101,10 @@ public class AdminController : Controller
     // POST: Admin/DeleteUser
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteUser(string userId)
+    public async Task<IActionResult> DeleteUser(string id)
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(id);
         if (await _userService.CanRemoveUser(currentUser, user))
         {
             await _userManager.DeleteAsync(user);
