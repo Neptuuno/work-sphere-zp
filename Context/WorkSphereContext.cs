@@ -9,7 +9,6 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
     public DbSet<PostModel> Posts { get; set; }
     public DbSet<ChatModel> Chats { get; set; }
     public DbSet<MessageModel> Messages { get; set; }
-    public DbSet<ChatUser> ChatUsers { get; set; }
 
     public WorkSphereContext(DbContextOptions<WorkSphereContext> options)
         : base(options)
@@ -21,24 +20,14 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<ApplicationUser>()
+            .HasMany(u => u.LikedPosts)
+            .WithMany(p => p.LikedByUsers);
+        
+        modelBuilder.Entity<ApplicationUser>()
             .HasMany(u => u.Posts)
             .WithOne(p => p.ApplicationUser)
-            .HasForeignKey(p => p.ApplicationUserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        //many to many configuration Chat User
-        modelBuilder.Entity<ChatUser>()
-            .HasKey(cu => new { cu.UserId, cu.ChatId });
-
-        modelBuilder.Entity<ChatUser>()
-            .HasOne(cu => cu.User)
-            .WithMany(u => u.ChatUsers)
-            .HasForeignKey(cu => cu.UserId);
-
-        modelBuilder.Entity<ChatUser>()
-            .HasOne(cu => cu.Chat)
-            .WithMany(c => c.ChatUsers)
-            .HasForeignKey(cu => cu.ChatId);
+            .HasForeignKey(p => p.ApplicationUserId);
+        
     }
     
 }
