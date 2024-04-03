@@ -60,6 +60,11 @@ public class PostService
         await _context.SaveChangesAsync();
     }
 
+    public async Task<uint> GetPostLikesCount(int postId)
+    {
+        var post = await GetPostByIdAsync(postId);
+        return (uint?)post?.LikedByUsers.Count ?? 0;
+    }
     public async Task UpdateLike(PostModel post, ApplicationUser user, bool liked)
     {
         if (liked && post.LikedByUsers.All(u => u.Id != user.Id))

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.InputModels;
 using SocialNetwork.Models.ViewModels;
 using SocialNetwork.Services;
 
@@ -142,24 +143,32 @@ public class PostController : Controller
         return View(postViewModel);
     }
 
+    [HttpGet]
+    public async Task<uint> GetLikesCount(int id)
+    {
+        return await _postService.GetPostLikesCount(id);
+    }
 
     [HttpPost]
-    public async Task UpdateLike(int id, string userId, bool liked)
+    public async Task UpdateLike([FromBody] UpdateLikeInputModel input)
     {
-        Console.WriteLine("liked removed");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("like changed");
+        Console.WriteLine(input.Id);
+        Console.WriteLine(input.Liked);
         ApplicationUser? user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
             return;
         }
 
-        var postModel = await _postService.GetPostByIdAsync(id);
+        var postModel = await _postService.GetPostByIdAsync(input.Id);
         if (postModel == null)
         {
             return;
         }
 
-        await _postService.UpdateLike(postModel, user, liked);
+        await _postService.UpdateLike(postModel, user, input.Liked);
     }
 
     // POST: Post/Delete/5
