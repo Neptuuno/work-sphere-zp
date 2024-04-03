@@ -85,6 +85,12 @@ public class PostController : Controller
     // GET: Post/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return BadRequest("User not logged in");
+        }
+        
         if (id == null || _context.Posts == null)
         {
             return NotFound();
@@ -94,6 +100,10 @@ public class PostController : Controller
         if (postModel == null)
         {
             return NotFound();
+        }
+        if (!_postService.IsAuthor(user,postModel))
+        {
+            return BadRequest("Unauthorized");
         }
 
         var postViewModel = _postService.CreateViewPostModelByModel(postModel);
@@ -115,7 +125,7 @@ public class PostController : Controller
         }
         var postModel = await _postService.GetPostByIdAsync(id);
             
-        if (!_postService.IsAuthorized(user,postModel))
+        if (!_postService.IsAuthor(user,postModel))
         {
             return BadRequest("Unauthorized");
         }
@@ -127,6 +137,56 @@ public class PostController : Controller
         }
 
         return View(postViewModel);
+    }
+    
+    
+    [HttpPost]
+    public async Task AddLike(int userId)
+    {
+        Console.WriteLine("liked removed");
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return;
+        }
+
+        var postModel = await _postService.GetPostByIdAsync(userId);
+        if (postModel == null)
+        {
+            return;
+        }
+        Console.ForegroundColor= ConsoleColor.Green;
+
+        if (!postModel.LikedByUsers.Contains(user))
+        {
+            postModel.LikedByUsers.Add(user);
+            await _context.SaveChangesAsync();
+        }
+        
+    }
+
+    [HttpPost]
+    public async Task RemoveLike(int userId)
+    {
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return;
+        }
+
+        var postModel = await _postService.GetPostByIdAsync(userId);
+        if (postModel == null)
+        {
+            return;
+        }
+        Console.WriteLine("liked removed");
+
+        if (postModel.LikedByUsers.Contains(user))
+        {
+            postModel.LikedByUsers.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
     }
 
     // POST: Post/Delete/5

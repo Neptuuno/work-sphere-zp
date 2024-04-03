@@ -47,7 +47,7 @@ namespace SocialNetwork.Controllers
         }
 
         // GET: Chats/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? userId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -55,8 +55,8 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            var chat = id.HasValue
-                ? await _chatService.GetChatById(id.Value)
+            var chat = userId.HasValue
+                ? await _chatService.GetChatById(userId.Value)
                 : _chatService.GetChatsForUser(user).Result.FirstOrDefault();
 
             if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
@@ -118,14 +118,14 @@ namespace SocialNetwork.Controllers
         // POST: Chat/Delete/5 TODO(Do something later maybe?)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int userId)
         {
             if (_context.Chats == null)
             {
                 return Problem("Entity set 'WorkSphereContext.Chats'  is null.");
             }
 
-            var chatModel = await _context.Chats.FindAsync(id);
+            var chatModel = await _context.Chats.FindAsync(userId);
             if (chatModel != null)
             {
                 _context.Chats.Remove(chatModel);

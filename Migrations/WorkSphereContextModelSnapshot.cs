@@ -17,6 +17,21 @@ namespace SocialNetwork.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.16");
 
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.Property<string>("LikedByUsersId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LikedPostsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LikedByUsersId", "LikedPostsId");
+
+                    b.HasIndex("LikedPostsId");
+
+                    b.ToTable("ApplicationUserPostModel");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -319,6 +334,21 @@ namespace SocialNetwork.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.HasOne("SocialNetwork.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("LikedByUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Models.PostModel", null)
+                        .WithMany()
+                        .HasForeignKey("LikedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

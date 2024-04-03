@@ -43,7 +43,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Post}/{action=Index}/{id?}");
+    pattern: "{controller=Post}/{action=Index}/{userId?}");
 app.MapRazorPages();
 app.MapHub<ChatHub>("/chathub");
 app.Run();

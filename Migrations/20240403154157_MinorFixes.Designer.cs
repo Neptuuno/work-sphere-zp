@@ -11,14 +11,29 @@ using SocialNetwork.Context;
 namespace SocialNetwork.Migrations
 {
     [DbContext(typeof(WorkSphereContext))]
-    [Migration("20240325173147_AddedLastOpenedChattoUser")]
-    partial class AddedLastOpenedChattoUser
+    [Migration("20240403154157_MinorFixes")]
+    partial class MinorFixes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.16");
+
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.Property<string>("LikedByUsersId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LikedPostsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LikedByUsersId", "LikedPostsId");
+
+                    b.HasIndex("LikedPostsId");
+
+                    b.ToTable("ApplicationUserPostModel");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -293,7 +308,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(24)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -311,7 +326,7 @@ namespace SocialNetwork.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -322,6 +337,21 @@ namespace SocialNetwork.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.HasOne("SocialNetwork.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("LikedByUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Models.PostModel", null)
+                        .WithMany()
+                        .HasForeignKey("LikedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

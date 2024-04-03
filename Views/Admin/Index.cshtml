@@ -51,7 +51,7 @@
         {
             <tr class="text-center">
                 <td class="border px-4 py-2">
-                    <a asp-controller="User" asp-action="Detail" asp-route-id="@user.Id" class="text-blue-500 hover:text-blue-800">@user.UserName</a>
+                    <a asp-controller="User" asp-action="Detail" asp-route-userId="@user.Id" class="text-blue-500 hover:text-blue-800">@user.UserName</a>
                 </td>
                 <td class="border px-4 py-2">@user.Email</td>
                 <td class="border px-4 py-2">@user.Age</td>
@@ -61,7 +61,7 @@
                         <ul>
                             @foreach (var post in user.Posts)
                             {
-                               <a asp-controller="Post" asp-action="Details" asp-route-id="@post.Id"><li>@post.Title</li></a>
+                               <a asp-controller="Post" asp-action="Details" asp-route-userId="@post.Id"><li>@post.Title</li></a>
                             }
                         </ul>
                     }

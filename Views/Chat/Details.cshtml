@@ -21,7 +21,7 @@
 else
 {
     <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between items-center w-1/2 mb-8">
-        <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther.Id">
+        <a asp-controller="User" asp-action="Detail" asp-route-userId="@Model.UserOther.Id">
             <div x- class="flex gap-2 items-center">
                 @if (Model.UserOther.ImageUrl != null)
                 {

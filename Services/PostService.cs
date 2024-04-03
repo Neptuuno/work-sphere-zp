@@ -22,19 +22,20 @@ public class PostService
 
     public async Task<List<PostModel>> GetAllPostsAsync()
     {
-       return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
+        return await _context.Posts.Include(p => p.ApplicationUser).Include(p => p.LikedByUsers).ToListAsync();
     }
-    
+
     public async Task<List<PostModel>> GetAllPostsAsyncSortedByIndex(string userId)
     {
-        return  await _context.Posts.Include(p => p.ApplicationUser).ToListAsync();
+        return await _context.Posts.Include(p => p.ApplicationUser).Include(p => p.LikedByUsers).ToListAsync();
     }
-    
+
     public async Task<IEnumerable<PostModel>> GetPostsByUserAsync(string userId)
     {
         return await _context.Posts
             .Where(p => p.ApplicationUserId == userId)
             .Include(p => p.ApplicationUser)
+            .Include(p => p.LikedByUsers)
             .ToListAsync();
     }
 
@@ -43,6 +44,7 @@ public class PostService
         return await _context.Posts
             .Where(p => p.Id == id)
             .Include(p => p.ApplicationUser)
+            .Include(p => p.LikedByUsers)
             .FirstOrDefaultAsync();
     }
 
@@ -53,6 +55,7 @@ public class PostService
         {
             postModel.ImageUrl = await _fileService.SaveImageAsync(image, userId, "posts");
         }
+
         _context.Add(postModel);
         await _context.SaveChangesAsync();
     }
@@ -65,6 +68,7 @@ public class PostService
             string? existingFileName = Path.GetFileName(postModel.ImageUrl);
             updatedPostModel.ImageUrl = await _fileService.SaveImageAsync(image, userId, "posts", existingFileName);
         }
+
         try
         {
             _context.Update(updatedPostModel);
@@ -95,7 +99,18 @@ public class PostService
 
     public bool IsAuthorized(ApplicationUser user, PostModel post)
     {
-        return post.ApplicationUserId == user.Id || _userManager.IsInRoleAsync(user, "SuperAdmin").Result || _userManager.IsInRoleAsync(user, "Admin").Result;
+        return IsAuthor(user, post) || _userManager.IsInRoleAsync(user, "SuperAdmin").Result ||
+               _userManager.IsInRoleAsync(user, "Admin").Result;
+    }
+
+    public bool IsAuthor(ApplicationUser user, PostModel post)
+    {
+        return post.ApplicationUserId == user.Id;
+    }
+    
+    public bool HasLikedPost(ApplicationUser user, PostModel post)
+    {
+        return post.LikedByUsers.Any(u => u.Id == user.Id);
     }
 
     private PostModel CreatePostModelByViewModel(PostViewModel postViewModel, string userId)
@@ -105,14 +120,14 @@ public class PostService
             PostType = postViewModel.PostType,
             Title = postViewModel.Title,
             Description = postViewModel.Description,
-            PostedOn =  DateTime.UtcNow,
+            PostedOn = DateTime.UtcNow,
             Category = postViewModel.Category,
             ApplicationUserId = userId,
         };
     }
+
     public PostModel UpdatePostModelByViewModel(PostModel postModel, PostViewModel postViewModel, string userId)
     {
-        
         postModel.PostType = postViewModel.PostType;
         postModel.Title = postViewModel.Title;
         postModel.Description = postViewModel.Description;
