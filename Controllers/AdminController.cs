@@ -101,10 +101,10 @@ public class AdminController : Controller
     // POST: Admin/DeleteUser
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteUser(string id)
+    public async Task<IActionResult> DeleteUser(string userId)
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        var user = await _userManager.FindByIdAsync(id);
+        var user = await _userManager.FindByIdAsync(userId);
         if (await _userService.CanRemoveUser(currentUser, user))
         {
             await _userManager.DeleteAsync(user);
