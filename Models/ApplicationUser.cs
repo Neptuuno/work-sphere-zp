@@ -9,5 +9,6 @@ public class ApplicationUser : IdentityUser
     public int? LastOpenedChatId { get; set; }
     public ICollection<PostModel> Posts { get; set; } = new List<PostModel>();
     public ICollection<ChatModel> Chats { get; set; } = new List<ChatModel>();
+    public ICollection<MessageModel> Messages { get; set; } = new List<MessageModel>();
     public ICollection<PostModel> LikedPosts { get; set; } = new List<PostModel>();
 }

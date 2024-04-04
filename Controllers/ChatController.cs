@@ -66,7 +66,7 @@ namespace SocialNetwork.Controllers
             {
                 Id = chat.Id,
                 UserSelf = user,
-                UserOther = await _chatService.GetOtherUser(chat, user),
+                UserOther =  _chatService.GetOtherUser(chat, user),
                 Messages = await _chatService.GetMessagesForChat(chat),
                 Color = chat.Color
             };

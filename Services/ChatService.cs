@@ -112,6 +112,8 @@ namespace SocialNetwork.Services
 
             return message;
         }
+        
+        public async Task
 
         public string GetTimestampFormat(DateTime timestamp)
         {
@@ -131,7 +133,7 @@ namespace SocialNetwork.Services
             return inputDate.ToString("dd/MM/yyyy");
         }
 
-        public async Task<List<ApplicationUser>> GetOtherUsers(IEnumerable<ChatModel> chats, ApplicationUser user)
+        public List<ApplicationUser> GetOtherUsers(IEnumerable<ChatModel> chats, ApplicationUser user)
         {
             var otherUsers = new List<ApplicationUser>();
             foreach (var chat in chats)
@@ -146,9 +148,9 @@ namespace SocialNetwork.Services
             return otherUsers;
         }
 
-        public async Task<ApplicationUser> GetOtherUser(ChatModel chat, ApplicationUser user)
+        public ApplicationUser? GetOtherUser(ChatModel? chat, ApplicationUser user)
         {
-            var otherUser = chat.Users.FirstOrDefault(u => u.Id != user.Id);
+            var otherUser = chat?.Users.FirstOrDefault(u => u.Id != user.Id);
             return otherUser;
         }
     }

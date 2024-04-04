@@ -14,12 +14,15 @@ public class AdminController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserService _userService;
+    private readonly FileService _fileService;
 
-    public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, UserService userService)
+    public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+        UserService userService, FileService fileService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _userService = userService;
+        _fileService = fileService;
     }
 
     // GET
@@ -60,20 +63,17 @@ public class AdminController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "SuperAdmin")]
-    public async Task<IActionResult> AssignRole(string id, string roleName)
+    public async Task<IActionResult> AssignRole(string userId, string roleName)
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        if (await _userManager.IsInRoleAsync(currentUser, "SuperAdmin"))
+        var user = await _userManager.FindByIdAsync(userId);
+        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+        
+        if (user != null && roleExists && roleName != "SuperAdmin" && currentUser != user)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            var roleExists = await _roleManager.RoleExistsAsync(roleName);
-            var isCurrentUser = currentUser == user;
-            if (user != null && roleExists && roleName != "SuperAdmin" && !isCurrentUser)
-            {
-                var oldRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, oldRoles);
-                await _userManager.AddToRoleAsync(user, roleName);
-            }
+            var oldRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, oldRoles);
+            await _userManager.AddToRoleAsync(user, roleName);
         }
 
         return RedirectToAction(nameof(Index));
@@ -105,8 +105,9 @@ public class AdminController : Controller
     {
         var currentUser = await _userManager.GetUserAsync(User);
         var user = await _userManager.FindByIdAsync(userId);
-        if (await _userService.CanRemoveUser(currentUser, user))
+        if (await _userService.CanDeleteUser(currentUser, user))
         {
+            _fileService.DeleteImage(user.ImageUrl);
             await _userManager.DeleteAsync(user);
         }
 

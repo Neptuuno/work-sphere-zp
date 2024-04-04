@@ -9,21 +9,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (Model.UserOther == null)
-{
-    <h4>You are alone in the chat</h4>
-    <script>
-        document.getElementById("messageInput").disabled = true;
-        document.getElementById("sendButton").disabled = true;
-    </script>
-}
-
-else
-{
-    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between items-center w-1/2 mb-8">
-        <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther.Id">
-            <div x- class="flex gap-2 items-center">
-                @if (Model.UserOther.ImageUrl != null)
+<div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between items-center w-1/2 mb-8">
+    <div x- class="flex gap-2 items-center">
+        @if (Model.UserOther != null)
+        {
+            <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther?.Id">
+                @if (Model.UserOther?.ImageUrl != null)
                 {
                     <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
                 }
@@ -33,28 +24,35 @@ else
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                     </svg>
                 }
-                <h4 class="text-xl">@Model.UserOther.UserName</h4>
-            </div>
-        </a>
-        <div>
-            @await Html.PartialAsync("components/_Chat-Color-picker", new ChatColorPickerModel
-            {
-                Color = Model.Color,
-                ChatId = Model.Id
-            })
-        </div>
+                <h4 class="text-xl">@Model.UserOther?.UserName</h4>
+            </a>
+        }
+        else
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            </svg>
+        <h4 class="text-xl">Deleted User</h4>
+        }
     </div>
-}
+    <div>
+        @await Html.PartialAsync("components/_Chat-Color-picker", new ChatColorPickerModel
+        {
+            Color = Model.Color,
+            ChatId = Model.Id
+        })
+    </div>
+</div>
 
 <div id="messagesList" class="flex flex-col gap-6 w-1/2">
     @foreach (var message in Model.Messages)
     {
-        var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
+        var messageClass = message.SenderId == Model.UserSelf?.Id ? "self-message" : "other-message";
         <div class="@messageClass">
             <div class="message-box text-@Model.Color">
                 @if (message.Sender != Model.UserSelf)
                 {
-                    @if (message.Sender.ImageUrl != null)
+                    @if (message.Sender?.ImageUrl != null)
                     {
                         <img class="message-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
                     }
@@ -65,7 +63,7 @@ else
                         </svg>
                     }
                 }
-                <div class="message-main bg-@(message.SenderId == Model.UserSelf.Id ? Model.Color : "white")">
+                <div class="message-main bg-@(message.SenderId == Model.UserSelf?.Id ? Model.Color : "white")">
                     <p class="message-content">@message.Content</p>
                     <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
                 </div>
@@ -88,16 +86,17 @@ else
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
-
 window.onload = function() {window.scrollTo(0,document.body.scrollHeight);}
 
 let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
-let senderId = '@Model.UserSelf.Id';
-let receiverId = '@Model.UserOther.Id';
+let senderId = '@Model.UserSelf?.Id';
+let receiverId = '@Model.UserOther?.Id';
 let chatId = parseInt('@Model.Id');
-let imageUrl = '@Model.UserOther.ImageUrl';
+let imageUrl = '@Model.UserOther?.ImageUrl';
 let color = '@Model.Color';
+let chatDisabled = '@(Model.UserOther == null)';
 
+if (!chatDisabled){                              
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });
@@ -180,6 +179,7 @@ function formatDateTime(date) {
     else {
         return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + inputDate.getFullYear();
     }
+}
 }
     
 </script>

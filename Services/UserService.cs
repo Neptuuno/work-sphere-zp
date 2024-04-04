@@ -67,7 +67,7 @@ public class UserService
         }
     }
 
-    public async Task<bool> CanRemoveUser(ApplicationUser? user, ApplicationUser? toRemove)
+    public async Task<bool> CanDeleteUser(ApplicationUser? user, ApplicationUser? toRemove)
     {
         if (user == null || toRemove == null || user.Id == toRemove.Id) return false;
 
