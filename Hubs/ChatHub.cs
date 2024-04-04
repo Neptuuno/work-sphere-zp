@@ -60,4 +60,9 @@ public class ChatHub : Hub
             await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessage);
         }
     }
+    public async Task DeleteMessage(int messageId)
+    {
+        await _chatService.DeleteMessage(messageId);
+        await Clients.All.SendAsync("MessageDeleted", messageId);
+    }
 }

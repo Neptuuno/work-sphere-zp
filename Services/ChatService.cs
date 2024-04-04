@@ -113,7 +113,17 @@ namespace SocialNetwork.Services
             return message;
         }
         
-        public async Task
+        public async Task DeleteMessage(int messageId)
+        {
+            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
+            if (message == null)
+            {
+                return;
+            }
+
+            _context.Messages.Remove(message);
+            await _context.SaveChangesAsync();
+        }
 
         public string GetTimestampFormat(DateTime timestamp)
         {
