@@ -38,6 +38,19 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+//disables unused Identity pages
+app.Map("/Identity/Account/Manage/ChangePassword", HandleRequest);
+app.Map("/Identity/Account/Manage/Email", HandleRequest);
+
+static void HandleRequest(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        await context.Response.WriteAsync("404 Not Found");
+    });
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 

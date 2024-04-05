@@ -192,9 +192,11 @@ connection.on("ReceiveMessage", function (message) {
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     let message = document.getElementById("messageInput").value;
+    if (message){
     connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
         return console.error(err.toString());
     });
+    }
     document.getElementById("messageInput").value = "";
     event.preventDefault();
 });

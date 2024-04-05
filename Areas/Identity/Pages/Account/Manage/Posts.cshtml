@@ -1,7 +1,8 @@
 @page
 @model SocialNetwork.Areas.Identity.Pages.Account.Manage.Posts
-
+<div class="flex items-center flex-col gap-8">
     @foreach (var item in Model.UserPosts.Reverse())
     {
         @await Html.PartialAsync("_PostDetailsPartial", item)
     }
+    </div>
