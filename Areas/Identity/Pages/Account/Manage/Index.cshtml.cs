@@ -59,9 +59,7 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            
             [Required]
             [Display(Name = "User name")]
             public string UserName { get; set; }
@@ -78,7 +76,6 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber,
                 UserName = userName,
                 Age = user.Age,
             };
@@ -113,16 +110,6 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             await _userService.SetUserImage(user, Image);
             await _userManager.UpdateAsync(_userService.GetUserModel(Input, user));
             
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
             if (user.UserName != Input.UserName && await _userManager.FindByNameAsync(Input.UserName) == null)
             {
                 await _userManager.SetUserNameAsync(user,Input.UserName);

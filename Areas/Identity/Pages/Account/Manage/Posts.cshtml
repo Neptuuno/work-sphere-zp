@@ -1,8 +1,17 @@
 @page
 @model SocialNetwork.Areas.Identity.Pages.Account.Manage.Posts
-<div class="flex items-center flex-col gap-8">
+<div class="flex items-center flex-col gap-8 ">
+    @if(!Model.UserPosts.Any())
+    {
+        <div class="border border-black shadow-offset p-8">
+        <h1 class="text-5xl">No posts yet.</h1>
+        <p>You can add new post by clicking <a asp-controller="Post" asp-action="Create" class="text-primary">here</a></p>
+        </div>
+    }
+    else{
     @foreach (var item in Model.UserPosts.Reverse())
     {
         @await Html.PartialAsync("_PostDetailsPartial", item)
     }
-    </div>
+    }
+</div>
