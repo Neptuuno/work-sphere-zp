@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using SocialNetwork.Services;
 
 namespace SocialNetwork.Controllers;
 
+[Authorize]
 public class UserController : Controller
 {
     private readonly WorkSphereContext _context;

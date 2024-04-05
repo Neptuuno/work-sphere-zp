@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Services;
 
 namespace SocialNetwork.Controllers;
 
+[Authorize]
 public class FileController : Controller
 {
     private readonly FileService _fileService;

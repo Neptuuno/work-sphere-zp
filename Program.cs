@@ -39,8 +39,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 //disables unused Identity pages
-app.Map("/Identity/Account/Manage/ChangePassword", HandleRequest);
-app.Map("/Identity/Account/Manage/Email", HandleRequest);
+// app.Map("/Identity/Account/Manage/ChangePassword", HandleRequest);
+// app.Map("/Identity/Account/Manage/Email", HandleRequest);
 
 static void HandleRequest(IApplicationBuilder app)
 {

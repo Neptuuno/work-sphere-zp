@@ -1,0 +1,31 @@
+@page
+@model DangerZoneModel
+@{
+    ViewData["Title"] = "Danger Zone";
+    ViewData["ActivePage"] = ManageNavPages.DangerZone;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="border border-black shadow-offset w-full p-6">
+    <h1 class="text-5xl mb-8">Delete account</h1>
+    <h3 class="text-xl mb-4">Beware, deleting your account is permanent.</h3>
+    <form id="danger-zone-form" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-red-500 mb-4"></div>
+        <div class="w-56">
+            <label asp-for="Input.Password" class="block text-xl leading-6 text-gray-900"></label>
+            <input asp-for="Input.Password" class="appearance-none block w-full bg-white rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6" autocomplete="current-password" aria-required="true" placeholder="Please enter your password." />
+            <span asp-validation-for="Input.Password" class="text-red-500"></span>
+        </div>
+        <div class="flex items-center mt-4">
+            <input asp-for="Input.Confirm" type="checkbox" class="appearance-none h-6 w-6 border border-gray-300 rounded mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500 checked:bg-blue-600 checked:border-transparent" />
+            <label asp-for="Input.Confirm" class="text-xl leading-6 text-gray-900"></label>
+        </div>
+        <div class="flex justify-end mt-6">
+            <button type="submit"  class="btn-red ml-4">Delete account</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
