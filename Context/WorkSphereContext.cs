@@ -10,6 +10,7 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
     public DbSet<PostModel> Posts { get; set; }
     public DbSet<ChatModel> Chats { get; set; }
     public DbSet<MessageModel> Messages { get; set; }
+    public DbSet<ContentModel> Contents { get; set; }
 
     public WorkSphereContext(DbContextOptions<WorkSphereContext> options)
         : base(options)

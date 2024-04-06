@@ -24,4 +24,15 @@ public class FileController : Controller
         return Ok(imageUrl);
     }
     
+    [HttpPost]
+    public async Task<IActionResult> UploadImage([FromForm] IFormFile file, string userId, string dirName, string? existingName = null)
+    {
+        string? imageUrl = await _fileService.SaveImageAsync(file, userId, dirName, existingName);
+        if (imageUrl == null)
+        {
+            return BadRequest();
+        }
+        return Ok(imageUrl);
+    }
+    
 }

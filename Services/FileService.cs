@@ -17,7 +17,7 @@ public class FileService
         _contentUrl = server.Features.Get<IServerAddressesFeature>()?.Addresses.First() + "/file-storage";
     }
 
-    public async Task<string> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
+    public async Task<string?> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
     {
         if (IsTooLarge(file))
         {

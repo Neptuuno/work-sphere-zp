@@ -45,7 +45,7 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(int chatId, string senderId, string receiverId, string message)
+    public async Task SendMessage(int chatId, string senderId, string receiverId, ContentModel message)
     {
         var newMessage = await _chatService.CreateMessage(chatId, senderId, message);
 

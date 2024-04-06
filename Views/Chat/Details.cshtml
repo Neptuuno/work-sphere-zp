@@ -82,9 +82,13 @@
 
 <div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
     <div class="flex gap-2 w-full items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color">
-            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
-        </svg>
+        <label class="">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 cursor-pointer text-@Model.Color">
+                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
+            </svg>
+                <input type="file" id="imageUpload" style="display: none;" />
+
+            </label>
         <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa" x-on:click="alert('key up')"/>
     </div>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton" x-ref="sendButton">
@@ -190,10 +194,32 @@ connection.on("ReceiveMessage", function (message) {
     document.getElementById("messagesList").appendChild(messageDiv);
 });
 
+document.getElementById("imageUpload").addEventListener("change", function (event) {
+    let file = event.target.files[0];
+    console.log(file)
+    let reader = new FileReader();
+    reader.onload = function (event) {
+        let dataUrl = event.target.result;
+        fetch('/File/Upload', {
+            method: 'POST',
+            body: JSON.stringify({ dataUrl: dataUrl }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.text())
+        .then(url => {
+            imageUrl = url;
+        });
+    };
+    reader.readAsDataURL(file);
+});
+
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    let message = document.getElementById("messageInput").value;
-    if (message){
-    connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
+    let messageText = document.getElementById("messageInput").value;
+    console.log(messageText)
+    if (messageText){
+    connection.invoke("SendMessage", chatId, senderId, receiverId, messageText).catch(function (err) {
         return console.error(err.toString());
     });
     }
@@ -225,6 +251,7 @@ function formatDateTime(date) {
         return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + inputDate.getFullYear();
     }
     }
+    
     function removeMessage(messageId) {
         connection.invoke("DeleteMessage", messageId).catch(function (err) {
             return console.error(err.toString());

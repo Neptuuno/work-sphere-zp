@@ -97,7 +97,7 @@ namespace SocialNetwork.Services
             return messages;
         }
 
-        public async Task<MessageModel> CreateMessage(int chatId, string userId, string content)
+        public async Task<MessageModel> CreateMessage(int chatId, string userId, ContentModel content)
         {
             var message = new MessageModel
             {
