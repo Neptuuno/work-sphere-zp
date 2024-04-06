@@ -27,12 +27,30 @@ public class FileController : Controller
     [HttpPost]
     public async Task<IActionResult> UploadImage([FromForm] IFormFile file, string userId, string dirName, string? existingName = null)
     {
-        string? imageUrl = await _fileService.SaveImageAsync(file, userId, dirName, existingName);
-        if (imageUrl == null)
+        try
         {
-            return BadRequest();
+            string? imageUrl = await _fileService.SaveImageAsync(file, userId, dirName, existingName);
+            return Ok(imageUrl);
         }
-        return Ok(imageUrl);
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(e);
+        }
     }
     
+    [HttpDelete]
+    public IActionResult DeleteImage(string imageUrl)
+    {
+        try
+        {
+            _fileService.DeleteImage(imageUrl);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(e);
+        }
+    }
 }

@@ -80,20 +80,24 @@
     }
 </div>
 
-<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
-    <div class="flex gap-2 w-full items-center">
-        <label class="">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 cursor-pointer text-@Model.Color">
-                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
-            </svg>
-                <input type="file" id="imageUpload" style="display: none;" />
+<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2">
+    <div id="imagePreviewContainer" class="flex-wrap gap-2 rounded p-4 m-2 shadow-offset border border-black">
+    </div>
+    <div class="flex justify-between items-center">
+        <div class="flex gap-2 w-full items-center">
+            <label>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 cursor-pointer text-@Model.Color">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
+                </svg>
+                <input type="file" multiple id="imageUpload" style="display: none;"/>
 
             </label>
-        <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa" x-on:click="alert('key up')"/>
+            <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa" x-on:click="alert('key up')"/>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton" x-ref="sendButton">
+            <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
+        </svg>
     </div>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton" x-ref="sendButton">
-        <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
-    </svg>
 </div>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
@@ -194,25 +198,72 @@ connection.on("ReceiveMessage", function (message) {
     document.getElementById("messagesList").appendChild(messageDiv);
 });
 
+let messageImageUrl;
+let imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
 document.getElementById("imageUpload").addEventListener("change", function (event) {
-    let file = event.target.files[0];
-    console.log(file)
-    let reader = new FileReader();
-    reader.onload = function (event) {
-        let dataUrl = event.target.result;
-        fetch('/File/Upload', {
+    let files = event.target.files;
+    for (const file of files) {
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', senderId);
+        formData.append('dirName', 'chats');
+
+        fetch('/File/UploadImage', {
             method: 'POST',
-            body: JSON.stringify({ dataUrl: dataUrl }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            body: formData
         })
         .then(response => response.text())
         .then(url => {
-            imageUrl = url;
+            getImageFullUrl(url)
+            .then(fullUrl => {
+                messageImageUrl = fullUrl;
+                let imgContainer = document.createElement('div');
+                imgContainer.style.position = 'relative';
+
+                let imgElement = document.createElement('img');
+                imgElement.src = fullUrl;
+                imgElement.alt = 'Uploaded image';
+                imgElement.width = 100;
+                imgElement.height = 100;
+                imgElement.classList.add('rounded');
+                imgElement.classList.add('cursor-pointer');
+                imgElement.classList.add('hover:blur-sm');
+                
+                imgElement.addEventListener('click', function () {
+                    fetch('/File/DeleteImage?imageUrl=' + encodeURIComponent(url), {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            imgElement.remove();
+                            if (imagePreviewContainer.childElementCount === 0) {
+                                imagePreviewContainer.style.display = 'none';
+                            }
+                        } else {
+                            console.error('Failed to delete image');
+                        }
+                    });
+                });
+
+                let removeIcon = createRemoveIcon(url);
+
+                imgContainer.appendChild(imgElement);
+                imgContainer.appendChild(removeIcon);
+
+                imgContainer.addEventListener('mouseover', function() {
+                    removeIcon.style.display = 'block';
+                });
+
+                imgContainer.addEventListener('mouseout', function() {
+                    removeIcon.style.display = 'none';
+                });
+
+                imagePreviewContainer.appendChild(imgContainer);
+                imagePreviewContainer.style.display = 'flex';
+            });
         });
-    };
-    reader.readAsDataURL(file);
+    }
 });
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
@@ -257,6 +308,7 @@ function formatDateTime(date) {
             return console.error(err.toString());
         });
     }
+    
     async function getImageFullUrl(url) {
         const response = await fetch(`/File/GetImageFullUrl?url=${encodeURIComponent(url)}`);
         console.log(response)
@@ -267,6 +319,19 @@ function formatDateTime(date) {
         let messageElement = document.getElementById("message-" + messageId);
         messageElement.remove();
     });
+}
+
+function createRemoveIcon(url) {
+    let removeIcon = document.createElement('div');
+    removeIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>`;
+    removeIcon.style.position = 'absolute';
+    removeIcon.style.top = '50%';
+    removeIcon.style.left = '50%';
+    removeIcon.style.transform = 'translate(-50%, -50%)';
+    removeIcon.style.display = 'none';
+    return removeIcon;
 }
     
 </script>
@@ -321,5 +386,9 @@ width: 2.5rem;
 .message-timestamp{
 font-size: 0.75rem;
 line-height: 1rem;
+}
+
+#imagePreviewContainer {
+    display: none;
 }
 </style>

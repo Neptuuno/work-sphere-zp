@@ -9,6 +9,7 @@
     <ItemGroup>
       <Folder Include="Database\" />
       <Folder Include="Middleware\" />
+      <Folder Include="wwwroot\file-storage\chats\61168281-1837-4cec-b738-09610932b12f\" />
       <Folder Include="wwwroot\file-storage\users\" />
     </ItemGroup>
 
