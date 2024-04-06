@@ -258,10 +258,16 @@ document.getElementById("imageUpload").addEventListener("change", function (even
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     let messageText = document.getElementById("messageInput").value;
-    let messageContent =
-    console.log(messageText)
-    console.log(messageImageUrls)
-    if (messageText){
+    let messageContentImages = messageImageUrls.map(url => ({ ImageUrl: url }));
+    
+    let messageContent = {
+            Text: messageText,
+            Images: messageContentImages
+        };
+
+    console.log(messageContent)
+    
+    if (messageText || messageContentImages.length > 0){
     connection.invoke("SendMessage", chatId, senderId, receiverId, messageContent).catch(function (err) {
         return console.error(err.toString());
     });
