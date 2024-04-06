@@ -1,12 +1,19 @@
-namespace SocialNetwork.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class ContentModel
+namespace SocialNetwork.Models
 {
-    public int Id { get; set; }
-    public string? Text { get; set; }
-    public string? ImageUrl { get; set; }
-    public bool SpecialMessage { get; set; } = false;
+    public class ContentModel
+    {
+        public int Id { get; set; }
+        [MaxLength(20000)] public string? Text { get; set; }
 
-    public int MessageId { get; set; }
-    public MessageModel Message { get; set; }
+        public ICollection<MessageImageModel>? Images { get; set; }
+
+        public bool SpecialMessage { get; set; } = false;
+
+        public int MessageId { get; set; }
+        public MessageModel Message { get; set; }
+    }
 }

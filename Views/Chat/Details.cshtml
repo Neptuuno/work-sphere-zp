@@ -198,8 +198,7 @@ connection.on("ReceiveMessage", function (message) {
     document.getElementById("messagesList").appendChild(messageDiv);
 });
 
-let messageImageUrl;
-let imagePreviewContainer = document.getElementById('imagePreviewContainer');
+let messageImageUrls = [];
 
 document.getElementById("imageUpload").addEventListener("change", function (event) {
     let files = event.target.files;
@@ -217,19 +216,20 @@ document.getElementById("imageUpload").addEventListener("change", function (even
         .then(url => {
             getImageFullUrl(url)
             .then(fullUrl => {
-                messageImageUrl = fullUrl;
+                messageImageUrls.push(fullUrl);
+                let imagePreviewContainer = document.getElementById('imagePreviewContainer');
                 let imgContainer = document.createElement('div');
                 imgContainer.style.position = 'relative';
+                imgContainer.style.width = '100px';
+                imgContainer.style.height = '100px';
 
                 let imgElement = document.createElement('img');
                 imgElement.src = fullUrl;
                 imgElement.alt = 'Uploaded image';
-                imgElement.width = 100;
-                imgElement.height = 100;
-                imgElement.classList.add('rounded');
-                imgElement.classList.add('cursor-pointer');
-                imgElement.classList.add('hover:blur-sm');
-                
+                imgElement.style.width = '100%';
+                imgElement.style.height = '100%';
+                imgElement.classList.add('rounded', 'cursor-pointer', 'hover:grayscale');
+
                 imgElement.addEventListener('click', function () {
                     fetch('/File/DeleteImage?imageUrl=' + encodeURIComponent(url), {
                         method: 'DELETE'
@@ -237,6 +237,7 @@ document.getElementById("imageUpload").addEventListener("change", function (even
                     .then(response => {
                         if (response.ok) {
                             imgElement.remove();
+                            imgContainer.remove();
                             if (imagePreviewContainer.childElementCount === 0) {
                                 imagePreviewContainer.style.display = 'none';
                             }
@@ -246,18 +247,7 @@ document.getElementById("imageUpload").addEventListener("change", function (even
                     });
                 });
 
-                let removeIcon = createRemoveIcon(url);
-
                 imgContainer.appendChild(imgElement);
-                imgContainer.appendChild(removeIcon);
-
-                imgContainer.addEventListener('mouseover', function() {
-                    removeIcon.style.display = 'block';
-                });
-
-                imgContainer.addEventListener('mouseout', function() {
-                    removeIcon.style.display = 'none';
-                });
 
                 imagePreviewContainer.appendChild(imgContainer);
                 imagePreviewContainer.style.display = 'flex';
@@ -268,9 +258,11 @@ document.getElementById("imageUpload").addEventListener("change", function (even
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     let messageText = document.getElementById("messageInput").value;
+    let messageContent =
     console.log(messageText)
+    console.log(messageImageUrls)
     if (messageText){
-    connection.invoke("SendMessage", chatId, senderId, receiverId, messageText).catch(function (err) {
+    connection.invoke("SendMessage", chatId, senderId, receiverId, messageContent).catch(function (err) {
         return console.error(err.toString());
     });
     }
@@ -311,7 +303,6 @@ function formatDateTime(date) {
     
     async function getImageFullUrl(url) {
         const response = await fetch(`/File/GetImageFullUrl?url=${encodeURIComponent(url)}`);
-        console.log(response)
         return await response.text();
     }
     
@@ -319,19 +310,6 @@ function formatDateTime(date) {
         let messageElement = document.getElementById("message-" + messageId);
         messageElement.remove();
     });
-}
-
-function createRemoveIcon(url) {
-    let removeIcon = document.createElement('div');
-    removeIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>`;
-    removeIcon.style.position = 'absolute';
-    removeIcon.style.top = '50%';
-    removeIcon.style.left = '50%';
-    removeIcon.style.transform = 'translate(-50%, -50%)';
-    removeIcon.style.display = 'none';
-    return removeIcon;
 }
     
 </script>
