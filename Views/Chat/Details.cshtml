@@ -54,7 +54,7 @@
                 {
                     @if (message.Sender?.ImageUrl != null)
                     {
-                        <img class="message-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
+                        <img class="user-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
                     }
                     else
                     {
@@ -64,7 +64,15 @@
                     }
                 }
                 <div class="message-main bg-@(message.SenderId == Model.UserSelf?.Id ? Model.Color : "white")">
+                    @if (message.Content?.Images != null)
+                    {
+                        foreach (var image in message.Content.Images)
+                        {
+                            <img class="message-img rounded shadow-offset border border-black" src="@FileService.GetImageFullUrl(image.ImageUrl)" alt="Message image"/>
+                        }
+                    }
                     <p class="message-content">@message.Content?.Text</p>
+
                     <div class="flex justify-between gap-2">
                         <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
                         @if (message.SenderId == Model.UserSelf?.Id)
@@ -164,11 +172,26 @@ connection.on("ReceiveMessage", function (message) {
         messageMainDiv.classList.add("bg-white");
     }
 
-    let contentSpan = document.createElement("p");
-    contentSpan.textContent = messageObject.Content.Text;
-    contentSpan.classList.add("message-content");
-    messageMainDiv.appendChild(contentSpan);
+    
 
+    if (messageObject.Content.Images && messageObject.Content.Images.$values.length > 0) {
+        messageObject.Content.Images.$values.forEach(imageObject => {
+            let imgElement = document.createElement("img");
+            getImageFullUrl(imageObject.ImageUrl)
+            .then(url => imgElement.src = url)
+            .catch(e => console.error(e));
+            imgElement.alt = "Message image";
+            imgElement.classList.add("message-img");
+            imgElement.classList.add("rounded", "shadow-offset", "border", "border-black");
+            messageMainDiv.appendChild(imgElement);
+        });
+    }
+    
+    let contentSpan = document.createElement("p");
+        contentSpan.textContent = messageObject.Content.Text;
+        contentSpan.classList.add("message-content");
+        messageMainDiv.appendChild(contentSpan);
+    
     let timestampSpan = document.createElement("span");
     timestampSpan.textContent = formatDateTime(messageObject.Timestamp);
     timestampSpan.classList.add("message-timestamp");
@@ -351,6 +374,14 @@ gap: 0.5rem;
 
 }
 
+.message-img {
+    max-width: 200px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
 .message-content{
 overflow: auto;
 overflow-wrap: break-word;
@@ -362,7 +393,7 @@ gap: 0.5rem;
 align-items: flex-end;
 }
 
-.message-img
+.user-img
 {
 border-radius: 9999px;
 height: 2.5rem;

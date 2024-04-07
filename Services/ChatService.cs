@@ -10,11 +10,13 @@ namespace SocialNetwork.Services
     {
         private readonly WorkSphereContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly FileService _fileService;
 
-        public ChatService(WorkSphereContext context, UserManager<ApplicationUser> userManager)
+        public ChatService(WorkSphereContext context, UserManager<ApplicationUser> userManager, FileService fileService)
         {
             _context = context;
             _userManager = userManager;
+            _fileService = fileService;
         }
 
         public async Task<List<ChatModel?>> GetChatsForUser(ApplicationUser user)
@@ -108,7 +110,7 @@ namespace SocialNetwork.Services
                 Text = input.Text,
                 Images = input.ImageUrls?.Select(url => new MessageImageModel { ImageUrl = url }).ToList()
             };
-            
+
             var message = new MessageModel
             {
                 ChatId = chatId,
@@ -122,13 +124,26 @@ namespace SocialNetwork.Services
 
             return message;
         }
-        
+
         public async Task DeleteMessage(int messageId)
         {
-            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
+            var message = await _context.Messages
+                .Include(m => m.Content)
+                .ThenInclude(c => c.Images)
+                .FirstOrDefaultAsync(m => m.Id == messageId);
             if (message == null)
             {
                 return;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message.Content.Images?.Count);
+            if (message.Content.Images != null)
+            {
+                foreach (var image in message.Content.Images)
+                {
+                    _fileService.DeleteImage(image.ImageUrl);
+                }
             }
 
             _context.Messages.Remove(message);

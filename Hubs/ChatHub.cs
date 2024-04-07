@@ -63,9 +63,6 @@ public class ChatHub : Hub
             ReferenceHandler = ReferenceHandler.Preserve
         });
         
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(JsonConvert.SerializeObject(newMessage));
-
         await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessageJson);
 
         if (UserConnectionMap.TryGetValue(receiverId, out var receiverConnectionId))
