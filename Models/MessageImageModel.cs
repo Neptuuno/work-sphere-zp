@@ -9,4 +9,6 @@ public class MessageImageModel
     
     [JsonIgnore]
     public ContentModel? Content { get; set; }
+    
+    public int ContentId { get; set; }
 }

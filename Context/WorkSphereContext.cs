@@ -37,6 +37,18 @@ public class WorkSphereContext : IdentityDbContext<ApplicationUser>
             .WithOne(m => m.Sender)
             .HasForeignKey(m => m.SenderId)
             .OnDelete(DeleteBehavior.SetNull);
+        
+        modelBuilder.Entity<MessageModel>()
+            .HasOne(m => m.Content)
+            .WithOne(c => c.Message)
+            .HasForeignKey<ContentModel>(c => c.MessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ContentModel>()
+            .HasMany(c => c.Images)
+            .WithOne(i => i.Content)
+            .HasForeignKey(i => i.ContentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
     
