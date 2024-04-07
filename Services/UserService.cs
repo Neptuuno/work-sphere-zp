@@ -44,6 +44,8 @@ public class UserService
             Id = userDetail.Id,
             UserName = userDetail.UserName,
             ImageUrl = userDetail.ImageUrl,
+            SecurityStamp = null,
+            ConcurrencyStamp = null,
         };
     }
 

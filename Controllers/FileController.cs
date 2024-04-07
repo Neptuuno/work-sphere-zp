@@ -8,10 +8,12 @@ namespace SocialNetwork.Controllers;
 public class FileController : Controller
 {
     private readonly FileService _fileService;
+    private readonly ChatService _chatService;
 
-    public FileController(FileService fileService)
+    public FileController(FileService fileService, ChatService chatService)
     {
         _fileService = fileService;
+        _chatService = chatService;
     }
 
     public IActionResult GetImageFullUrl(string url)

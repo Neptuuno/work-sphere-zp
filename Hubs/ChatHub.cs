@@ -1,9 +1,14 @@
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using SocialNetwork.Models;
+using SocialNetwork.Models.InputModels;
 using SocialNetwork.Services;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SocialNetwork.Hubs;
 
@@ -45,19 +50,27 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(int chatId, string senderId, string receiverId, ContentModel message)
+    public async Task SendMessage(int chatId, string senderId, string receiverId, MessageInputModel messageInput)
     {
-        var newMessage = await _chatService.CreateMessage(chatId, senderId, message);
-
+        var newMessage = await _chatService.CreateMessage(chatId, senderId, messageInput);
+        
         var senderConnectionId = UserConnectionMap[senderId];
         var senderUser = await _userService.GetSafeUserDetails(senderId);
         newMessage.Sender = senderUser;
+        
+        var newMessageJson = JsonSerializer.Serialize(newMessage, new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.Preserve
+        });
+        
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(JsonConvert.SerializeObject(newMessage));
 
-        await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessage);
+        await Clients.Client(senderConnectionId).SendAsync("ReceiveMessage", newMessageJson);
 
         if (UserConnectionMap.TryGetValue(receiverId, out var receiverConnectionId))
         {
-            await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessage);
+            await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", newMessageJson);
         }
     }
     public async Task DeleteMessage(int messageId)

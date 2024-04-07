@@ -64,7 +64,7 @@
                     }
                 }
                 <div class="message-main bg-@(message.SenderId == Model.UserSelf?.Id ? Model.Color : "white")">
-                    <p class="message-content">@message.Content</p>
+                    <p class="message-content">@message.Content?.Text</p>
                     <div class="flex justify-between gap-2">
                         <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
                         @if (message.SenderId == Model.UserSelf?.Id)
@@ -103,6 +103,7 @@
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 
 <script>
+
 window.onload = function() {window.scrollTo(0,document.body.scrollHeight);}
 
 let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
@@ -119,19 +120,22 @@ connection.start().catch(function (err) {
 });
 
 connection.on("ReceiveMessage", function (message) {
+    let messageObject = JSON.parse(message);
+    console.log(messageObject)
     let messageDiv = document.createElement("div");
-    messageDiv.classList.add(message.senderId === senderId ? "self-message" : "other-message");
-    messageDiv.id = "message-" + message.id;
-
+    messageDiv.classList.add(messageObject.SenderId === senderId ? "self-message" : "other-message");
+    messageDiv.id = "message-" + messageObject.Id;
     let messageBoxDiv = document.createElement("div");
     messageBoxDiv.classList.add("message-box");
     messageBoxDiv.classList.add("text-" + color);
-
-    if (message.senderId !== senderId) {
+    
+    if (messageObject.SenderId !== senderId) {
         let imgElement;
-        if (message.sender.imageUrl != null) {
+        if (messageObject.Sender.ImageUrl != null) {
             imgElement = document.createElement("img");
-            getImageFullUrl(message.sender.imageUrl).then(url => imgElement.src = url);
+            getImageFullUrl(messageObject.Sender.ImageUrl)
+            .then(url => imgElement.src = url)
+            .catch(e => console.error(e));
             imgElement.alt = "profile image";
             imgElement.classList.add("message-img");
         } else {
@@ -151,36 +155,36 @@ connection.on("ReceiveMessage", function (message) {
         }
         messageBoxDiv.appendChild(imgElement);
     }
-
+    
     let messageMainDiv = document.createElement("div");
     messageMainDiv.classList.add("message-main");
-    if (message.senderId === senderId) {
+    if (messageObject.SenderId === senderId) {
         messageMainDiv.classList.add("bg-" + color);
     } else {
         messageMainDiv.classList.add("bg-white");
     }
 
     let contentSpan = document.createElement("p");
-    contentSpan.textContent = message.content;
+    contentSpan.textContent = messageObject.Content.Text;
     contentSpan.classList.add("message-content");
     messageMainDiv.appendChild(contentSpan);
 
     let timestampSpan = document.createElement("span");
-    timestampSpan.textContent = formatDateTime(message.timestamp);
+    timestampSpan.textContent = formatDateTime(messageObject.Timestamp);
     timestampSpan.classList.add("message-timestamp");
     
     let flexDiv = document.createElement("div");
     flexDiv.classList.add("flex", "justify-between", "gap-2");
     flexDiv.appendChild(timestampSpan);
     
-    if (message.senderId === senderId) {
+    if (messageObject.SenderId === senderId) {
         let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svgElement.setAttribute("viewBox", "0 0 24 24");
         svgElement.setAttribute("fill", "none");
         svgElement.setAttribute("stroke-width", "1.5");
         svgElement.setAttribute("stroke", "currentColor");
         svgElement.classList.add("w-4", "h-4", "cursor-pointer", "hover:text-red-500", "hover:transition-all", "transition-all");
-        svgElement.addEventListener("click", function() { removeMessage(message.id); });
+        svgElement.addEventListener("click", function() { removeMessage(messageObject.Id); });
     
         let pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathElement.setAttribute("stroke-linecap", "round");
@@ -206,7 +210,7 @@ document.getElementById("imageUpload").addEventListener("change", function (even
         let formData = new FormData();
         formData.append('file', file);
         formData.append('userId', senderId);
-        formData.append('dirName', 'chats');
+        formData.append('dirName', 'message-images-temp');
 
         fetch('/File/UploadImage', {
             method: 'POST',
@@ -216,7 +220,7 @@ document.getElementById("imageUpload").addEventListener("change", function (even
         .then(url => {
             getImageFullUrl(url)
             .then(fullUrl => {
-                messageImageUrls.push(fullUrl);
+                messageImageUrls.push(url);
                 let imagePreviewContainer = document.getElementById('imagePreviewContainer');
                 let imgContainer = document.createElement('div');
                 imgContainer.style.position = 'relative';
@@ -258,16 +262,14 @@ document.getElementById("imageUpload").addEventListener("change", function (even
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
     let messageText = document.getElementById("messageInput").value;
-    let messageContentImages = messageImageUrls.map(url => ({ ImageUrl: url }));
     
     let messageContent = {
             Text: messageText,
-            Images: messageContentImages
+            ImageUrls: messageImageUrls
         };
 
-    console.log(messageContent)
     
-    if (messageText || messageContentImages.length > 0){
+    if (messageText || messageImageUrls.length > 0){
     connection.invoke("SendMessage", chatId, senderId, receiverId, messageContent).catch(function (err) {
         return console.error(err.toString());
     });

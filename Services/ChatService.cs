@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.InputModels;
 
 namespace SocialNetwork.Services
 {
@@ -91,14 +92,23 @@ namespace SocialNetwork.Services
                 .Where(c => c.Id == chat.Id)
                 .Include(c => c.Messages)
                 .ThenInclude(m => m.Sender)
+                .Include(c => c.Messages)
+                .ThenInclude(m => m.Content)
+                .ThenInclude(c => c.Images)
                 .SelectMany(c => c.Messages)
                 .ToListAsync();
 
             return messages;
         }
 
-        public async Task<MessageModel> CreateMessage(int chatId, string userId, ContentModel content)
+        public async Task<MessageModel> CreateMessage(int chatId, string userId, MessageInputModel input)
         {
+            var content = new ContentModel
+            {
+                Text = input.Text,
+                Images = input.ImageUrls?.Select(url => new MessageImageModel { ImageUrl = url }).ToList()
+            };
+            
             var message = new MessageModel
             {
                 ChatId = chatId,

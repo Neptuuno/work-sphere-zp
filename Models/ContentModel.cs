@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace SocialNetwork.Models
 {
@@ -14,6 +15,8 @@ namespace SocialNetwork.Models
         public bool SpecialMessage { get; set; } = false;
 
         public int MessageId { get; set; }
+        
+        [JsonIgnore]
         public MessageModel Message { get; set; }
     }
 }
