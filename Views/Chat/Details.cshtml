@@ -298,6 +298,12 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     });
     }
     document.getElementById("messageInput").value = "";
+    messageImageUrls = [];
+    let imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        while (imagePreviewContainer.firstChild) {
+            imagePreviewContainer.removeChild(imagePreviewContainer.firstChild);
+        }
+        imagePreviewContainer.style.display = 'none';        
     event.preventDefault();
 });
 

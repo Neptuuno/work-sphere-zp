@@ -16,12 +16,14 @@ public class ChatHub : Hub
 {
     private readonly ChatService _chatService;
     private readonly UserService _userService;
+    private readonly FileService _fileService;
     private static readonly Dictionary<string, string> UserConnectionMap = new Dictionary<string, string>();
 
-    public ChatHub(ChatService chatService, UserService userService)
+    public ChatHub(ChatService chatService, UserService userService, FileService fileService)
     {
         _chatService = chatService;
         _userService = userService;
+        _fileService = fileService;
     }
 
     public override async Task OnConnectedAsync()
@@ -45,6 +47,7 @@ public class ChatHub : Hub
         if (userId != null)
         {
             UserConnectionMap.Remove(userId);
+            _fileService.DeleteFolder("message-images-temp", userId);
         }
 
         await base.OnDisconnectedAsync(exception);

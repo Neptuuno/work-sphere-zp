@@ -59,6 +59,27 @@ public class FileService
         string relativeFilePath = Path.GetRelativePath(_targetFolder, filePath);
         return relativeFilePath;
     }
+    
+    public string MoveFile(string sourcePath, string destPath)
+    {
+        string fullSourcePath = Path.Combine(_targetFolder, sourcePath);
+        string fullDestPath = Path.Combine(_targetFolder, destPath);
+
+        string? destDirectoryPath = Path.GetDirectoryName(fullDestPath);
+        if (!Directory.Exists(destDirectoryPath) && destDirectoryPath != null)
+        {
+            Directory.CreateDirectory(destDirectoryPath);
+        }
+
+        if (!File.Exists(fullSourcePath))
+        {
+            throw new FileNotFoundException($"Source file {fullSourcePath} does not exist.");
+        }
+
+        File.Move(fullSourcePath, fullDestPath);
+
+        return destPath;
+    }
 
     public void DeleteImage(string? url)
     {
@@ -69,6 +90,15 @@ public class FileService
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
+        }
+    }
+    
+    public void DeleteFolder(string dirName, string userId)
+    {
+        string directoryPath = Path.Combine(_targetFolder, dirName, userId);
+        if (Directory.Exists(directoryPath))
+        {
+            Directory.Delete(directoryPath, true);
         }
     }
 

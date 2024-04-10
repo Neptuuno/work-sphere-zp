@@ -108,7 +108,7 @@ namespace SocialNetwork.Services
             var content = new ContentModel
             {
                 Text = input.Text,
-                Images = input.ImageUrls?.Select(url => new MessageImageModel { ImageUrl = url }).ToList()
+                Images = input.ImageUrls?.Select(url => new MessageImageModel { ImageUrl = _fileService.MoveFile(url, url.Replace("message-images-temp", "message-images")) }).ToList()
             };
 
             var message = new MessageModel
