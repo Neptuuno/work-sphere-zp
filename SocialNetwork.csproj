@@ -10,6 +10,7 @@
       <Folder Include="Database\" />
       <Folder Include="Middleware\" />
       <Folder Include="wwwroot\file-storage\users\" />
+      <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
     <ItemGroup>
