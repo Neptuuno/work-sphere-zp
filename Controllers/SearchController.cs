@@ -17,17 +17,18 @@ public class SearchController : Controller
     [HttpGet]
     public IActionResult Get(string query)
     {
+        query = query.ToLower();
+
         var users = _context.Users
-            .Select(u => new { Text = u.UserName, Type = "User" });
+            .Where(u => u.UserName != null && u.UserName.ToLower().Contains(query))
+            .Select(u => new { Id = u.Id, Text = u.UserName, ImageUrl = u.ImageUrl, Type = "User" });
 
         var posts = _context.Posts
-            .Select(p => new { Text = p.Title, Type = "Post" });
+            .Where(p => p.Title.ToLower().Contains(query))
+            .Select(p => new {Id = p.Id.ToString(), Text = p.Title, ImageUrl = p.ImageUrl, Type = "Post" });
 
         var all = users.Concat(posts)
-            .AsEnumerable()
-            .Select(x => new { x.Text, x.Type, Score = Fuzz.Ratio(query, x.Text) })
-            .Where(x => x.Score > 60) // Adjust the threshold as needed
-            .OrderByDescending(x => x.Score)
+            .OrderByDescending(x => x.Text.ToLower().Contains(query))
             .Take(5)
             .ToList();
 

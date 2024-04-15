@@ -23,7 +23,7 @@ public class UserController : Controller
         _userService = userService;
     }
 
-    public async Task<IActionResult> Detail(string? id)
+    public async Task<IActionResult> Details(string? id)
     {
         if (id == null)
         {
