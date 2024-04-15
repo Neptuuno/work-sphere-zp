@@ -11,7 +11,7 @@ public class PostModel
     [MaxLength(32)]
     public string Title { get; set; }
     public string Description { get; set; }
-    // public int Likes { get; set; } = 0;
+     
     [DisplayName("Image")]
     public string? ImageUrl { get; set; }
     public DateTime PostedOn { get; set; }
@@ -20,6 +20,9 @@ public class PostModel
     public string Category { get; set; }
 
     // public List<CommentModel> Comments { get; set; }
+    
+    public ICollection<ApplicationUser> LikedByUsers { get; set; } = new List<ApplicationUser>();
+
     public string ApplicationUserId { get; set; }
     public ApplicationUser ApplicationUser { get; set; }
 }

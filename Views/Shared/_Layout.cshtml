@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using SocialNetwork.Services
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Identity
+@inject FileService FileService
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -13,11 +21,12 @@
 </head>
 <body>
 <div class="flex min-h-full flex-col">
-    <div class="mx-auto w-10/12 relative flex justify-between px-4 py-10 sm:px-6 lg:px-8">
-        <aside class="sticky top-0 hidden w-64 shrink-0 xl:block">
+    <div class="mx-auto w-10/12 flex justify-between px-4 py-10 sm:px-6 lg:px-8 relative">
+        <div class="hidden w-64 shrink-0 xl:block sticky top-0">
+           <img class="mb-4 w-48 p-4 border border-black rounded shadow-offset" src="~/images/WorkSphere Logo.svg" alt="Logo" />
             <!-- Left column area -->
-            <nav>
-                <ul class="border border-black rounded w-3/4 py-2 pl-2 shadow-offset">
+            <nav class="sticky top-4">
+                <ul class="border border-black rounded w-48 py-2 pl-2 shadow-offset">
                     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                     {
                         <li class="flex items-center gap-2">
@@ -56,27 +65,44 @@
                         <a class="text-2xl" asp-area="" asp-controller="Chat" asp-action="Index">Chats</a>
                     </li>
                     <li class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        </svg>
-                        <a class="text-2xl" asp-area="Identity" asp-page="/Account/Manage/Settings">Profile</a>
+                        @if (user?.ImageUrl != null)
+                        {
+                            <img class="w-6 h-6 rounded-full" src="@FileService.GetImageFullUrl(user.ImageUrl)" alt="profile image"/>
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                            </svg>
+                        }
+                        <a class="text-2xl" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a>
                     </li>
                     <li>
                         <partial name="_LoginPartial"/>
                     </li>
                 </ul>
             </nav>
-        </aside>
+        </div>
 
         <main class="flex-1 flex flex-col items-center">
             @RenderBody()
         </main>
         <aside class="sticky top-0 flex justify-end w-64 shrink-0 lg:block">
-            <!-- Right column area -->
+            <!-- Right column area --> 
+                <div class="relative block w-full">
+                    <input id="searchInput" type="text" placeholder="Search" class="rounded p-2 text-gray-900 shadow-offset ring-1 ring-inset ring-black placeholder:text-gray-400 focus-visible:outline-none sm:text-sm sm:leading-6 w-full pr-8" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 absolute top-1/2 right-2 transform -translate-y-1/2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                    </svg>
+                </div>
+                <div class="my-4" id="searchResults"></div> 
+            
+            <div class="sticky top-4">
             @if (User != null)
             {
                 <partial name="_ChatPartial"/>
             }
+            </div>
         </aside>
 
     </div>
@@ -89,6 +115,48 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    document.getElementById('searchInput').addEventListener('input', async function(e) {
+        const query = e.target.value.trim();
+        if (query.length > 0) {
+            try {
+                const response = await fetch('/Search/Get?query=' + query);
+                const data = await response.json();
+
+                console.log(data)
+                let resultsHtml = '<ul class="border border-black rounded p-2 shadow-offset">';
+                if (data.length === 0) {
+                    resultsHtml += '<li class="flex items-center justify-center">No results found</li>';
+                }
+                else{
+                for (const item of data) {
+                    let imageHtml = '';
+                    if (item.imageUrl) {
+                        const imageResponse = await fetch('/File/GetImageFullUrl?url=' + item.imageUrl);
+                        const imageUrl = await imageResponse.text();
+                        imageHtml = `<img class="w-6 h-6 rounded-full" src="${imageUrl}" alt="${item.text}" />`;
+                    } else {
+                        if (item.type === 'User') {
+                            imageHtml = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                        </svg>`;
+                        }
+                    }
+                    let detailsUrl = item.type === 'User' ? `/User/Details/${item.id}` : `/Post/Details/${item.id}`;
+                    resultsHtml += `<li class="flex justify-center gap-2 items-center">${imageHtml}<a href="${detailsUrl}"><span> ${item.text}</span></a></li>`;
+                }
+                }
+                resultsHtml += '</ul>';
+
+                document.getElementById('searchResults').innerHTML = resultsHtml;
+            } catch (e) {
+                console.error('An error occurred while fetching the search results', e);
+            }
+        } else {
+            document.getElementById('searchResults').innerHTML = '';
+        }
+    });
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

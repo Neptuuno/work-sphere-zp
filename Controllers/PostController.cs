@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
+using SocialNetwork.Models.InputModels;
 using SocialNetwork.Models.ViewModels;
 using SocialNetwork.Services;
 
@@ -72,6 +73,7 @@ public class PostController : Controller
                 await _postService.CreatePostAsync(postViewModel, user.Id, ImageUrl);
                 return RedirectToAction(nameof(Index));
             }
+
             ModelState.AddModelError(string.Empty, "Error when creating new post");
         }
         else
@@ -85,6 +87,12 @@ public class PostController : Controller
     // GET: Post/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return BadRequest("User not logged in");
+        }
+
         if (id == null || _context.Posts == null)
         {
             return NotFound();
@@ -94,6 +102,11 @@ public class PostController : Controller
         if (postModel == null)
         {
             return NotFound();
+        }
+
+        if (!_postService.IsAuthor(user, postModel))
+        {
+            return BadRequest("Unauthorized");
         }
 
         var postViewModel = _postService.CreateViewPostModelByModel(postModel);
@@ -113,20 +126,49 @@ public class PostController : Controller
         {
             return BadRequest("User not logged in");
         }
+
         var postModel = await _postService.GetPostByIdAsync(id);
-            
-        if (!_postService.IsAuthorized(user,postModel))
+
+        if (!_postService.IsAuthor(user, postModel))
         {
             return BadRequest("Unauthorized");
         }
 
         if (ModelState.IsValid)
         {
-            await _postService.UpdatePostAsync(postModel,postViewModel, user.Id, ImageUrl);
-            return RedirectToAction(nameof(Details), new {id});
+            await _postService.UpdatePostAsync(postModel, postViewModel, user.Id, ImageUrl);
+            return RedirectToAction(nameof(Details), new { id = id });
         }
 
         return View(postViewModel);
+    }
+
+    [HttpGet]
+    public async Task<uint> GetLikesCount(int id)
+    {
+        return await _postService.GetPostLikesCount(id);
+    }
+
+    [HttpPost]
+    public async Task UpdateLike([FromBody] UpdateLikeInputModel input)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("like changed");
+        Console.WriteLine(input.Id);
+        Console.WriteLine(input.Liked);
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return;
+        }
+
+        var postModel = await _postService.GetPostByIdAsync(input.Id);
+        if (postModel == null)
+        {
+            return;
+        }
+
+        await _postService.UpdateLike(postModel, user, input.Liked);
     }
 
     // POST: Post/Delete/5
@@ -139,12 +181,13 @@ public class PostController : Controller
         {
             return BadRequest("User not logged in");
         }
+
         var postModel = await _postService.GetPostByIdAsync(id);
-        if (!_postService.IsAuthorized(user,postModel))
+        if (!_postService.IsAuthorized(user, postModel))
         {
             return BadRequest("Unauthorized");
         }
-            
+
         await _postService.DeletePostAsync(id);
         return RedirectToAction(nameof(Index));
     }

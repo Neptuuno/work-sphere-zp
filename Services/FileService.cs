@@ -17,7 +17,7 @@ public class FileService
         _contentUrl = server.Features.Get<IServerAddressesFeature>()?.Addresses.First() + "/file-storage";
     }
 
-    public async Task<string> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
+    public async Task<string?> SaveImageAsync(IFormFile file, string userId, string dirName, string? existingName = null)
     {
         if (IsTooLarge(file))
         {
@@ -59,15 +59,46 @@ public class FileService
         string relativeFilePath = Path.GetRelativePath(_targetFolder, filePath);
         return relativeFilePath;
     }
+    
+    public string MoveFile(string sourcePath, string destPath)
+    {
+        string fullSourcePath = Path.Combine(_targetFolder, sourcePath);
+        string fullDestPath = Path.Combine(_targetFolder, destPath);
+
+        string? destDirectoryPath = Path.GetDirectoryName(fullDestPath);
+        if (!Directory.Exists(destDirectoryPath) && destDirectoryPath != null)
+        {
+            Directory.CreateDirectory(destDirectoryPath);
+        }
+
+        if (!File.Exists(fullSourcePath))
+        {
+            throw new FileNotFoundException($"Source file {fullSourcePath} does not exist.");
+        }
+
+        File.Move(fullSourcePath, fullDestPath);
+
+        return destPath;
+    }
 
     public void DeleteImage(string? url)
     {
         if (url == null)
             return;
         string filePath = Path.Combine(_targetFolder, url);
+        Console.WriteLine(filePath);
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
+        }
+    }
+    
+    public void DeleteFolder(string dirName, string userId)
+    {
+        string directoryPath = Path.Combine(_targetFolder, dirName, userId);
+        if (Directory.Exists(directoryPath))
+        {
+            Directory.Delete(directoryPath, true);
         }
     }
 

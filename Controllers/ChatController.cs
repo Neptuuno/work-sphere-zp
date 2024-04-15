@@ -41,8 +41,6 @@ namespace SocialNetwork.Controllers
             }
 
             var lastChatId = _userService.GetLastOpenedChatIdForUser(user);
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(lastChatId);
             return RedirectToAction(nameof(Details), new { id = lastChatId });
         }
 
@@ -59,7 +57,7 @@ namespace SocialNetwork.Controllers
                 ? await _chatService.GetChatById(id.Value)
                 : _chatService.GetChatsForUser(user).Result.FirstOrDefault();
 
-            if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
+            if (chat == null || chat.Users.All(u => u.Id != user.Id))
             {
                 return View("Index");
             }
@@ -68,7 +66,7 @@ namespace SocialNetwork.Controllers
             {
                 Id = chat.Id,
                 UserSelf = user,
-                UserOther = await _chatService.GetOtherUser(chat, user),
+                UserOther =  _chatService.GetOtherUser(chat, user),
                 Messages = await _chatService.GetMessagesForChat(chat),
                 Color = chat.Color
             };
@@ -105,7 +103,7 @@ namespace SocialNetwork.Controllers
             
             var chat = await _chatService.GetChatById(chatId);
 
-            if (chat == null || chat.ChatUsers.All(cu => cu.UserId != user.Id))
+            if (chat == null || chat.Users.All(u => u.Id != user.Id))
             {
                 return NotFound();
             }

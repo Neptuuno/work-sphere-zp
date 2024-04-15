@@ -17,6 +17,36 @@ namespace SocialNetwork.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.16");
 
+            modelBuilder.Entity("ApplicationUserChatModel", b =>
+                {
+                    b.Property<int>("ChatsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ChatsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ApplicationUserChatModel");
+                });
+
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.Property<string>("LikedByUsersId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LikedPostsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LikedByUsersId", "LikedPostsId");
+
+                    b.HasIndex("LikedPostsId");
+
+                    b.ToTable("ApplicationUserPostModel");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -236,19 +266,47 @@ namespace SocialNetwork.Migrations
                     b.ToTable("Chats");
                 });
 
-            modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
+            modelBuilder.Entity("SocialNetwork.Models.ContentModel", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("ChatId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("UserId", "ChatId");
+                    b.Property<int>("MessageId")
+                        .HasColumnType("INTEGER");
 
-                    b.HasIndex("ChatId");
+                    b.Property<bool>("SpecialMessage")
+                        .HasColumnType("INTEGER");
 
-                    b.ToTable("ChatUsers");
+                    b.Property<string>("Text")
+                        .HasMaxLength(20000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId")
+                        .IsUnique();
+
+                    b.ToTable("Contents");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Models.MessageImageModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentId");
+
+                    b.ToTable("MessageImages");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>
@@ -259,9 +317,6 @@ namespace SocialNetwork.Migrations
 
                     b.Property<int>("ChatId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("SenderId")
                         .HasColumnType("TEXT");
@@ -321,6 +376,36 @@ namespace SocialNetwork.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("ApplicationUserChatModel", b =>
+                {
+                    b.HasOne("SocialNetwork.Models.ChatModel", null)
+                        .WithMany()
+                        .HasForeignKey("ChatsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ApplicationUserPostModel", b =>
+                {
+                    b.HasOne("SocialNetwork.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("LikedByUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Models.PostModel", null)
+                        .WithMany()
+                        .HasForeignKey("LikedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -372,23 +457,26 @@ namespace SocialNetwork.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SocialNetwork.Models.ChatUser", b =>
+            modelBuilder.Entity("SocialNetwork.Models.ContentModel", b =>
                 {
-                    b.HasOne("SocialNetwork.Models.ChatModel", "Chat")
-                        .WithMany("ChatUsers")
-                        .HasForeignKey("ChatId")
+                    b.HasOne("SocialNetwork.Models.MessageModel", "Message")
+                        .WithOne("Content")
+                        .HasForeignKey("SocialNetwork.Models.ContentModel", "MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SocialNetwork.Models.ApplicationUser", "User")
-                        .WithMany("ChatUsers")
-                        .HasForeignKey("UserId")
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Models.MessageImageModel", b =>
+                {
+                    b.HasOne("SocialNetwork.Models.ContentModel", "Content")
+                        .WithMany("Images")
+                        .HasForeignKey("ContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Chat");
-
-                    b.Navigation("User");
+                    b.Navigation("Content");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>
@@ -400,8 +488,9 @@ namespace SocialNetwork.Migrations
                         .IsRequired();
 
                     b.HasOne("SocialNetwork.Models.ApplicationUser", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId");
+                        .WithMany("Messages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Chat");
 
@@ -421,16 +510,25 @@ namespace SocialNetwork.Migrations
 
             modelBuilder.Entity("SocialNetwork.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("ChatUsers");
+                    b.Navigation("Messages");
 
                     b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("SocialNetwork.Models.ChatModel", b =>
                 {
-                    b.Navigation("ChatUsers");
-
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Models.ContentModel", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Models.MessageModel", b =>
+                {
+                    b.Navigation("Content")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

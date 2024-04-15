@@ -9,13 +9,14 @@
     <ItemGroup>
       <Folder Include="Database\" />
       <Folder Include="Middleware\" />
-      <Folder Include="wwwroot\file-storage\posts\c086ba60-9a6b-4e52-bccb-dc58544e8d2b\" />
       <Folder Include="wwwroot\file-storage\users\" />
+      <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.16" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.16" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.16" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.16">
         <PrivateAssets>all</PrivateAssets>
@@ -101,6 +102,12 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
       <_ContentIncludedByDefault Remove="wwwroot\file-storage\users\61168281-1837-4cec-b738-09610932b12f\b81efa6c-c0f1-4e71-a4a2-1c4c42d3c2e0.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\posts\61168281-1837-4cec-b738-09610932b12f\32d0d968-75c2-491c-8186-c044008d4b8a.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\posts\61168281-1837-4cec-b738-09610932b12f\aa7ab6bf-b40a-4db9-a93f-8da4f45745d5.jpeg" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\chat-images\61168281-1837-4cec-b738-09610932b12f\099b0d19-1170-4f4d-af61-7e3ae01be92d.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\chat-images\61168281-1837-4cec-b738-09610932b12f\1c6f2fcf-8b7b-4a4a-9285-248dddc04ff7.jpeg" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\chat-images\61168281-1837-4cec-b738-09610932b12f\73f88721-9432-4b0b-9bdd-0ea6023a395b.webp" />
+      <_ContentIncludedByDefault Remove="wwwroot\file-storage\chat-images\61168281-1837-4cec-b738-09610932b12f\eff37c2f-6669-4d9f-953f-da84f2f5a562.jpeg" />
     </ItemGroup>
 
 </Project>

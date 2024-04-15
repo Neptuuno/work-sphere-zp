@@ -9,21 +9,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (Model.UserOther == null)
-{
-    <h4>You are alone in the chat</h4>
-    <script>
-        document.getElementById("messageInput").disabled = true;
-        document.getElementById("sendButton").disabled = true;
-    </script>
-}
-
-else
-{
-    <div class="rounded p-2 text-gray-900 shadow-offset border border-black flex justify-between items-center w-1/2 mb-8">
-        <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther.Id">
-            <div x- class="flex gap-2 items-center">
-                @if (Model.UserOther.ImageUrl != null)
+<div class="rounded p-2 text-gray-900 shadow-offset bg-white border border-black flex justify-between items-center w-1/2 mb-8 sticky top-0">
+    <div class="flex gap-2 items-center">
+        @if (Model.UserOther != null)
+        {
+            <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther?.Id" class="flex gap-2 items-center">
+                @if (Model.UserOther?.ImageUrl != null)
                 {
                     <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
                 }
@@ -33,30 +24,37 @@ else
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                     </svg>
                 }
-                <h4 class="text-xl">@Model.UserOther.UserName</h4>
-            </div>
-        </a>
-        <div>
-            @await Html.PartialAsync("components/_Chat-Color-picker", new ChatColorPickerModel
-            {
-                Color = Model.Color,
-                ChatId = Model.Id
-            })
-        </div>
+                <h4 class="text-xl">@Model.UserOther?.UserName</h4>
+            </a>
+        }
+        else
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+            </svg>
+            <h4 class="text-xl">Deleted User</h4>
+        }
     </div>
-}
+    <div>
+        @await Html.PartialAsync("components/_Chat-Color-picker", new ChatColorPickerModel
+        {
+            Color = Model.Color,
+            ChatId = Model.Id
+        })
+    </div>
+</div>
 
 <div id="messagesList" class="flex flex-col gap-6 w-1/2">
     @foreach (var message in Model.Messages)
     {
-        var messageClass = message.SenderId == Model.UserSelf.Id ? "self-message" : "other-message";
-        <div class="@messageClass">
+        var messageClass = message.SenderId == Model.UserSelf?.Id ? "self-message" : "other-message";
+        <div id="message-@message.Id" class="@messageClass">
             <div class="message-box text-@Model.Color">
                 @if (message.Sender != Model.UserSelf)
                 {
-                    @if (message.Sender.ImageUrl != null)
+                    @if (message.Sender?.ImageUrl != null)
                     {
-                        <img class="message-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
+                        <img class="user-img" src="@FileService.GetImageFullUrl(message.Sender.ImageUrl)" alt="profile image"/>
                     }
                     else
                     {
@@ -65,54 +63,87 @@ else
                         </svg>
                     }
                 }
-                <div class="message-main bg-@(message.SenderId == Model.UserSelf.Id ? Model.Color : "white")">
-                    <p class="message-content">@message.Content</p>
-                    <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
+                <div class="message-main bg-@(message.SenderId == Model.UserSelf?.Id ? Model.Color : "white")">
+                    @if (message.Content?.Images != null)
+                    {
+                        foreach (var image in message.Content.Images)
+                        {
+                            <img class="message-img rounded shadow-offset border border-black" src="@FileService.GetImageFullUrl(image.ImageUrl)" alt="Message image"/>
+                        }
+                    }
+                    <p class="message-content">@message.Content?.Text</p>
+
+                    <div class="flex justify-between gap-2">
+                        <span class="message-timestamp">@ChatService.GetTimestampFormat(message.Timestamp)</span>
+                        @if (message.SenderId == Model.UserSelf?.Id)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" onclick="removeMessage(@message.Id)" class="w-4 h-4 cursor-pointer hover:text-red-500 hover:transition-all transition-all">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                            </svg>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     }
 </div>
 
-<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2 flex justify-between items-center">
-    <div class="flex gap-2 w-full items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color">
-            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
-        </svg>
-        <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa"/>
+<div class="mt-8 rounded p-2 text-gray-900 shadow-offset border border-black w-1/2">
+    <div id="imagePreviewContainer" class="flex-wrap gap-2 rounded p-4 m-2 shadow-offset border border-black">
     </div>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton">
-        <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
-    </svg>
+    <div class="flex justify-between items-center">
+        <div class="flex gap-2 w-full items-center">
+            <label>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 cursor-pointer text-@Model.Color">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd"/>
+                </svg>
+                <input type="file" multiple id="imageUpload" style="display: none;"/>
+
+            </label>
+            <input type="text" class="bg-@Model.Color rounded placeholder-black w-11/12 p-1" id="messageInput" placeholder="Aa" x-on:click="alert('key up')"/>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-@Model.Color cursor-pointer" id="sendButton" x-ref="sendButton">
+            <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"/>
+        </svg>
+    </div>
 </div>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
+
 <script>
 
-let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
-let senderId = '@Model.UserSelf.Id';
-let receiverId = '@Model.UserOther.Id';
-let chatId = parseInt('@Model.Id');
-let imageUrl = '@Model.UserOther.ImageUrl';
-let color = '@Model.Color';
+window.onload = function() {window.scrollTo(0,document.body.scrollHeight);}
 
+let connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+let senderId = '@Model.UserSelf?.Id';
+let receiverId = '@Model.UserOther?.Id';
+let chatId = parseInt('@Model.Id');
+let imageUrl = '@Model.UserOther?.ImageUrl';
+let color = '@Model.Color';
+let chatDisabled = '@(Model.UserOther == null)'.toLowerCase();
+
+if (chatDisabled === 'false'){                              
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });
 
 connection.on("ReceiveMessage", function (message) {
+    let messageObject = JSON.parse(message);
+    console.log(messageObject)
     let messageDiv = document.createElement("div");
-    messageDiv.classList.add(message.senderId === senderId ? "self-message" : "other-message");
-
+    messageDiv.classList.add(messageObject.SenderId === senderId ? "self-message" : "other-message");
+    messageDiv.id = "message-" + messageObject.Id;
     let messageBoxDiv = document.createElement("div");
     messageBoxDiv.classList.add("message-box");
     messageBoxDiv.classList.add("text-" + color);
-
-    if (message.senderId !== senderId) {
+    
+    if (messageObject.SenderId !== senderId) {
         let imgElement;
-        if (message.sender.imageUrl != null) {
+        if (messageObject.Sender.ImageUrl != null) {
             imgElement = document.createElement("img");
-            imgElement.src = imageUrl;
+            getImageFullUrl(messageObject.Sender.ImageUrl)
+            .then(url => imgElement.src = url)
+            .catch(e => console.error(e));
             imgElement.alt = "profile image";
             imgElement.classList.add("message-img");
         } else {
@@ -132,34 +163,155 @@ connection.on("ReceiveMessage", function (message) {
         }
         messageBoxDiv.appendChild(imgElement);
     }
-
+    
     let messageMainDiv = document.createElement("div");
     messageMainDiv.classList.add("message-main");
-    messageMainDiv.classList.add("bg-" + color);
+    if (messageObject.SenderId === senderId) {
+        messageMainDiv.classList.add("bg-" + color);
+    } else {
+        messageMainDiv.classList.add("bg-white");
+    }
 
+    
+
+    if (messageObject.Content.Images && messageObject.Content.Images.$values.length > 0) {
+        messageObject.Content.Images.$values.forEach(imageObject => {
+            let imgElement = document.createElement("img");
+            getImageFullUrl(imageObject.ImageUrl)
+            .then(url => imgElement.src = url)
+            .catch(e => console.error(e));
+            imgElement.alt = "Message image";
+            imgElement.classList.add("message-img");
+            imgElement.classList.add("rounded", "shadow-offset", "border", "border-black");
+            messageMainDiv.appendChild(imgElement);
+        });
+    }
+    
     let contentSpan = document.createElement("p");
-    contentSpan.textContent = message.content;
-    contentSpan.classList.add("message-content");
-    messageMainDiv.appendChild(contentSpan);
-
+        contentSpan.textContent = messageObject.Content.Text;
+        contentSpan.classList.add("message-content");
+        messageMainDiv.appendChild(contentSpan);
+    
     let timestampSpan = document.createElement("span");
-    timestampSpan.textContent = formatDateTime(message.timestamp);
+    timestampSpan.textContent = formatDateTime(messageObject.Timestamp);
     timestampSpan.classList.add("message-timestamp");
-    messageMainDiv.appendChild(timestampSpan);
+    
+    let flexDiv = document.createElement("div");
+    flexDiv.classList.add("flex", "justify-between", "gap-2");
+    flexDiv.appendChild(timestampSpan);
+    
+    if (messageObject.SenderId === senderId) {
+        let svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svgElement.setAttribute("viewBox", "0 0 24 24");
+        svgElement.setAttribute("fill", "none");
+        svgElement.setAttribute("stroke-width", "1.5");
+        svgElement.setAttribute("stroke", "currentColor");
+        svgElement.classList.add("w-4", "h-4", "cursor-pointer", "hover:text-red-500", "hover:transition-all", "transition-all");
+        svgElement.addEventListener("click", function() { removeMessage(messageObject.Id); });
+    
+        let pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathElement.setAttribute("stroke-linecap", "round");
+        pathElement.setAttribute("stroke-linejoin", "round");
+        pathElement.setAttribute("d", "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0");
+    
+        svgElement.appendChild(pathElement);
+        flexDiv.appendChild(svgElement);
+    }
 
+    messageMainDiv.appendChild(flexDiv);
     messageBoxDiv.appendChild(messageMainDiv);
     messageDiv.appendChild(messageBoxDiv);
 
     document.getElementById("messagesList").appendChild(messageDiv);
 });
 
+let messageImageUrls = [];
+
+document.getElementById("imageUpload").addEventListener("change", function (event) {
+    let files = event.target.files;
+    for (const file of files) {
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', senderId);
+        formData.append('dirName', 'message-images-temp');
+
+        fetch('/File/UploadImage', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(url => {
+            getImageFullUrl(url)
+            .then(fullUrl => {
+                messageImageUrls.push(url);
+                let imagePreviewContainer = document.getElementById('imagePreviewContainer');
+                let imgContainer = document.createElement('div');
+                imgContainer.style.position = 'relative';
+                imgContainer.style.width = '100px';
+                imgContainer.style.height = '100px';
+
+                let imgElement = document.createElement('img');
+                imgElement.src = fullUrl;
+                imgElement.alt = 'Uploaded image';
+                imgElement.style.width = '100%';
+                imgElement.style.height = '100%';
+                imgElement.classList.add('rounded', 'cursor-pointer', 'hover:grayscale');
+
+                imgElement.addEventListener('click', function () {
+                    fetch('/File/DeleteImage?imageUrl=' + encodeURIComponent(url), {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            imgElement.remove();
+                            imgContainer.remove();
+                            if (imagePreviewContainer.childElementCount === 0) {
+                                imagePreviewContainer.style.display = 'none';
+                            }
+                        } else {
+                            console.error('Failed to delete image');
+                        }
+                    });
+                });
+
+                imgContainer.appendChild(imgElement);
+
+                imagePreviewContainer.appendChild(imgContainer);
+                imagePreviewContainer.style.display = 'flex';
+            });
+        });
+    }
+});
+
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    let message = document.getElementById("messageInput").value;
-    connection.invoke("SendMessage", chatId, senderId, receiverId, message).catch(function (err) {
+    let messageText = document.getElementById("messageInput").value;
+    
+    let messageContent = {
+            Text: messageText,
+            ImageUrls: messageImageUrls
+        };
+
+    
+    if (messageText || messageImageUrls.length > 0){
+    connection.invoke("SendMessage", chatId, senderId, receiverId, messageContent).catch(function (err) {
         return console.error(err.toString());
     });
+    }
     document.getElementById("messageInput").value = "";
+    messageImageUrls = [];
+    let imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        while (imagePreviewContainer.firstChild) {
+            imagePreviewContainer.removeChild(imagePreviewContainer.firstChild);
+        }
+        imagePreviewContainer.style.display = 'none';        
     event.preventDefault();
+});
+
+document.getElementById("messageInput").addEventListener("keyup", function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        document.getElementById("sendButton").dispatchEvent(new Event('click'));
+    }
 });
 
 function formatDateTime(date) {
@@ -178,19 +330,34 @@ function formatDateTime(date) {
     else {
         return inputDate.getDate().toString().padStart(2, '0') + '/' + (inputDate.getMonth() + 1).toString().padStart(2, '0') + '/' + inputDate.getFullYear();
     }
+    }
+    
+    function removeMessage(messageId) {
+        connection.invoke("DeleteMessage", messageId).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+    
+    async function getImageFullUrl(url) {
+        const response = await fetch(`/File/GetImageFullUrl?url=${encodeURIComponent(url)}`);
+        return await response.text();
+    }
+    
+    connection.on("MessageDeleted", function (messageId) {
+        let messageElement = document.getElementById("message-" + messageId);
+        messageElement.remove();
+    });
 }
     
 </script>
 
 <style>
 .self-message {
-    color: green;
     display: flex;
     justify-content: flex-end;
 }
 
 .other-message {
-    color: red;
     display: flex;
     justify-content: flex-start;
 }
@@ -213,6 +380,14 @@ gap: 0.5rem;
 
 }
 
+.message-img {
+    max-width: 200px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
 .message-content{
 overflow: auto;
 overflow-wrap: break-word;
@@ -224,7 +399,7 @@ gap: 0.5rem;
 align-items: flex-end;
 }
 
-.message-img
+.user-img
 {
 border-radius: 9999px;
 height: 2.5rem;
@@ -234,5 +409,9 @@ width: 2.5rem;
 .message-timestamp{
 font-size: 0.75rem;
 line-height: 1rem;
+}
+
+#imagePreviewContainer {
+    display: none;
 }
 </style>

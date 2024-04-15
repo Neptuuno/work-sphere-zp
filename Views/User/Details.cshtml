@@ -1,0 +1,23 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = @Model.UserName;
+}
+
+<h1>User details</h1>
+<h1>@Model.UserName</h1>
+@if (Model.Age != null)
+{
+    <h1>@Model.Age</h1>
+}
+
+<form asp-controller="Chat" asp-action="Create" method="post">
+    <input type="hidden" name="secondUserId" value="@Model.Id" />
+    <input type="submit" value="Create Chat" />
+</form>
+<div class="flex flex-col gap-8 items-center">
+
+@foreach (var item in Model.Posts.Reverse())
+{
+    @await Html.PartialAsync("_PostDetailsPartial", item)
+}
+</div>

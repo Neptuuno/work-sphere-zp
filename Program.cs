@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SocialNetwork.Context;
 using SocialNetwork.Models;
 using SocialNetwork.Context;
@@ -21,7 +22,9 @@ builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<FileService>();
 // Add services to the container.
 builder.Services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = 
+        ReferenceLoopHandling.Ignore);
 
 var app = builder.Build();
 
@@ -37,6 +40,19 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+//disables unused Identity pages
+// app.Map("/Identity/Account/Manage/ChangePassword", HandleRequest);
+// app.Map("/Identity/Account/Manage/Email", HandleRequest);
+
+static void HandleRequest(IApplicationBuilder app)
+{
+    app.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        await context.Response.WriteAsync("404 Not Found");
+    });
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
