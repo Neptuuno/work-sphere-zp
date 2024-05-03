@@ -66,7 +66,7 @@ namespace SocialNetwork.Controllers
             {
                 Id = chat.Id,
                 UserSelf = user,
-                UserOther =  _chatService.GetOtherUser(chat, user),
+                UserOther = _chatService.GetOtherUser(chat, user),
                 Messages = await _chatService.GetMessagesForChat(chat),
                 Color = chat.Color
             };
@@ -86,9 +86,10 @@ namespace SocialNetwork.Controllers
                 return NotFound();
             }
 
-            await _chatService.CreateChat(currentUser.Id, secondUserId);
+            ChatModel chat = await _chatService.CreateChat(currentUser.Id, secondUserId);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            Console.WriteLine(chat.Id);
+            return RedirectToAction(nameof(Details), new {id = chat.Id});
         }
 
         [HttpPost]
@@ -100,7 +101,7 @@ namespace SocialNetwork.Controllers
             {
                 return NotFound();
             }
-            
+
             var chat = await _chatService.GetChatById(chatId);
 
             if (chat == null || chat.Users.All(u => u.Id != user.Id))
@@ -111,26 +112,6 @@ namespace SocialNetwork.Controllers
             await _chatService.SaveColor(chat, color);
 
             return RedirectToAction(nameof(Details), new { id = chat.Id });
-        }
-
-        // POST: Chat/Delete/5 TODO(Do something later maybe?)
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Chats == null)
-            {
-                return Problem("Entity set 'WorkSphereContext.Chats'  is null.");
-            }
-
-            var chatModel = await _context.Chats.FindAsync(id);
-            if (chatModel != null)
-            {
-                _context.Chats.Remove(chatModel);
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok();
         }
 
         private bool ChatModelExists(int id)
