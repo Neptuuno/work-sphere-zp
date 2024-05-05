@@ -13,7 +13,7 @@
     <div class="flex gap-2 items-center">
         @if (Model.UserOther != null)
         {
-            <a asp-controller="User" asp-action="Detail" asp-route-id="@Model.UserOther?.Id" class="flex gap-2 items-center">
+            <a asp-controller="User" asp-action="Details" asp-route-id="@Model.UserOther?.Id" class="flex gap-2 items-center">
                 @if (Model.UserOther?.ImageUrl != null)
                 {
                     <img class="w-10 h-10 rounded-full" src="@FileService.GetImageFullUrl(Model.UserOther.ImageUrl)" alt="profile image"/>
@@ -145,7 +145,7 @@ connection.on("ReceiveMessage", function (message) {
             .then(url => imgElement.src = url)
             .catch(e => console.error(e));
             imgElement.alt = "profile image";
-            imgElement.classList.add("message-img");
+            imgElement.classList.add("user-img");
         } else {
             imgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             imgElement.setAttribute("viewBox", "0 0 24 24");

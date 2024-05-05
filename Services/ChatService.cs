@@ -75,7 +75,7 @@ namespace SocialNetwork.Services
 
             if (existingChat != null)
             {
-                return null;
+                return existingChat;
             }
 
             var chat = new ChatModel
