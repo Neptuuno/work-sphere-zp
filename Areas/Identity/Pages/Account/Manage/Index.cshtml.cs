@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using System;
@@ -34,7 +35,6 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -59,15 +59,16 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            
+
             [Required]
+            [StringLength(32, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 4)]
+            [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "The {0} can only contain alphanumeric characters.")]
             [Display(Name = "User name")]
             public string UserName { get; set; }
         }
 
-        [BindProperty] 
-        public IFormFile Image { get; set; }
-        
+        [BindProperty] public IFormFile Image { get; set; }
+
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
@@ -100,28 +101,26 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
+            // Update the user's image and other details regardless of the username
             await _userService.SetUserImage(user, Image);
             await _userManager.UpdateAsync(_userService.GetUserModel(Input, user));
-            
-            if (user.UserName != Input.UserName && await _userManager.FindByNameAsync(Input.UserName) == null)
+
+            // Only attempt to update the username if it is valid and not taken
+            if (ModelState.IsValid && user.UserName != Input.UserName && await _userManager.FindByNameAsync(Input.UserName) == null)
             {
-                await _userManager.SetUserNameAsync(user,Input.UserName);
+                await _userManager.SetUserNameAsync(user, Input.UserName);
+                await _signInManager.RefreshSignInAsync(user);
+                StatusMessage = "Your username has been updated";
             }
-            else
+            else if (user.UserName != Input.UserName)
             {
-                StatusMessage = "This username is already taken.";
-                return RedirectToPage();
+                // If the username is invalid or taken, add an error to the ModelState
+                ModelState.AddModelError("Input.UserName", "This username is already taken.");
             }
 
-            await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
+            // Reload the page to display the updated profile and any validation errors
+            await LoadAsync(user);
+            return Page();
         }
     }
 }

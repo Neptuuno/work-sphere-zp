@@ -145,7 +145,7 @@ connection.on("ReceiveMessage", function (message) {
             .then(url => imgElement.src = url)
             .catch(e => console.error(e));
             imgElement.alt = "profile image";
-            imgElement.classList.add("message-img");
+            imgElement.classList.add("user-img");
         } else {
             imgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             imgElement.setAttribute("viewBox", "0 0 24 24");

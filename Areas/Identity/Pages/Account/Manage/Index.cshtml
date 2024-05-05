@@ -7,6 +7,7 @@
 
 <div class="border border-black shadow-offset w-full p-6">
     <h1 class="text-5xl mb-8">@ViewData["Title"]</h1>
+    <partial name="_StatusMessage" model="Model.StatusMessage" />
     <form enctype="multipart/form-data" id="profile-form" method="post">
         <div asp-validation-summary="ModelOnly" class="text-red-500 mb-4"></div>
         <div class="flex flex-col gap-2 ">
@@ -35,7 +36,7 @@
                 <span asp-validation-for="Image" class="text-red-500"></span>
             </div>
         </div>
-        <div class="flex justify-end mt-6">
+        <div class="flex justify-start mt-6">
             <button id="update-profile-button" type="submit" class="btn-primary">Save</button>
         </div>
     </form>
