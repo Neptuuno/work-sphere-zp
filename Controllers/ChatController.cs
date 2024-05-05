@@ -81,7 +81,7 @@ namespace SocialNetwork.Controllers
         public async Task<IActionResult> Create(string secondUserId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null)
+            if (currentUser == null || secondUserId == currentUser.Id)
             {
                 return NotFound();
             }

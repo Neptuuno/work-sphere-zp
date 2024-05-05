@@ -77,7 +77,7 @@ namespace SocialNetwork.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 UserName = userName,
-                Age = user.Age,
+                Bio = user.Bio,
             };
         }
 

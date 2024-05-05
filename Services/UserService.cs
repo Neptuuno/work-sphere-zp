@@ -85,7 +85,7 @@ public class UserService
 
     public ApplicationUser GetUserModel(IndexModel.InputModel inputModel, ApplicationUser user)
     {
-        user.Age = inputModel.Age;
+        user.Bio = inputModel.Bio;
         return user;
     }
 }

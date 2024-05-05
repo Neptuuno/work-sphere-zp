@@ -4,7 +4,7 @@ namespace SocialNetwork.Models;
 
 public class ApplicationUser : IdentityUser
 {
-    public int? Age { get; set; }
+    public string? Bio { get; set; }
     public string? ImageUrl { get; set; }
     public int? LastOpenedChatId { get; set; }
     public ICollection<PostModel> Posts { get; set; } = new List<PostModel>();
